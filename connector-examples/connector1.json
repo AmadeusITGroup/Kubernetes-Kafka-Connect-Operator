@@ -1,0 +1,12 @@
+{
+    "connector.class": "io.confluent.connect.elasticsearch.ElasticsearchSinkConnector",
+    "tasks.max": "2",
+    "topics": "TOPIC_NAME",
+    "key.ignore": "true",
+    "connection.url": "http://elastic-server:9200",
+    "type.name": "index",
+    "name": "elasticsearch-sink",
+    "schema.ignore": "true",
+    "value.converter": "org.apache.kafka.connect.json.JsonConverter",
+    "value.converter.schemas.enable": "false"
+}

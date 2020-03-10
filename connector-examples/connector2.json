@@ -1,0 +1,6 @@
+{
+    "connector.class": "connector.class",
+    "tasks.max": "wrong",
+    "topics": "topic",
+    "param": "value"
+}
