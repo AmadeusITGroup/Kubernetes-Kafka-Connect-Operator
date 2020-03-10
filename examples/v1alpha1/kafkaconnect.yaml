@@ -1,0 +1,80 @@
+apiVersion: kafkaconnect.operator.io/v1alpha1
+kind: KafkaConnect
+metadata:
+  name: kafkaconnectcloud
+  labels:
+    app: kafkaconnect
+    type: elasticsearch-sink
+spec:
+  scaleStabilizationSec: 60
+  kafkaConnectRestAPIPort: 8083
+  ingressSpec:
+    parentDomain: apps-crc.testing
+    style: domainStyle
+  connectors:
+    kafkaBrokers: "localhost:9092"
+    taskPerPod: 1
+    initPodReplicas: 1
+    connectorConfigs:
+      - name: connector-elastic
+        exposeLagMetric: true
+        url: https://raw.githubusercontent.com/AmadeusITGroup/connector-example/master/connector1.jsonhttps://raw.githubusercontent.com/AmadeusITGroup/Kubernetes-Kafka-Connect-Operator/master/connector-examples/connector1.json
+  podSpec:
+    containers:
+      - name: kafkaconnect
+        image: confluentinc/cp-kafka-connect:5.3.1
+        imagePullPolicy: IfNotPresent
+        ports:
+          - containerPort: 8083
+        env:
+          - name: CONNECT_BOOTSTRAP_SERVERS
+            value: "localhost:9092"
+          - name: CONNECT_GROUP_ID
+            value: connector-elastic
+          - name: CONNECT_CONFIG_STORAGE_TOPIC
+            value: connect-configs-logger
+          - name: CONNECT_STATUS_STORAGE_TOPIC
+            value: connect-status-logger
+          - name: CONNECT_OFFSET_STORAGE_TOPIC
+            value: connect-offsets-logger
+          - name: CONNECT_INTERNAL_KEY_CONVERTER
+            value: org.apache.kafka.connect.json.JsonConverter
+          - name: CONNECT_INTERNAL_VALUE_CONVERTER
+            value: org.apache.kafka.connect.json.JsonConverter
+          - name: CONNECT_VALUE_CONVERTER
+            value: org.apache.kafka.connect.storage.StringConverter
+          - name: CONNECT_KEY_CONVERTER
+            value: org.apache.kafka.connect.storage.StringConverter
+          - name: CONNECT_PLUGIN_PATH
+            value: /usr/share/java,/usr/share/confluent-hub-components
+          - name: CONNECT_LOG4J_ROOT_LOGLEVEL
+            value: INFO
+          - name: CONNECT_LOG4J_LOGGERS
+            value: org.reflections=INFO
+          - name: CONNECT_REST_ADVERTISED_HOST_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: status.podIP
+          - name: KAFKA_HEAP_OPTS
+            value: "-Xms500M -Xmx800M"
+        readinessProbe:
+          httpGet:
+            path: /connectors
+            port: 8083
+          initialDelaySeconds: 120
+          periodSeconds: 5
+          timeoutSeconds: 1
+        livenessProbe:
+          httpGet:
+            path: /connectors
+            port: 8083
+          initialDelaySeconds: 120
+          periodSeconds: 20
+          timeoutSeconds: 1
+        resources:
+          limits:
+            cpu: 500m
+            memory: 1Gi
+          requests:
+            memory: 700Mi
+            cpu: 300m

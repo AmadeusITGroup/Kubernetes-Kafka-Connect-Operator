@@ -1,0 +1,23 @@
+apiVersion: kafkaconnect.operator.io/v1alpha1
+kind: KafkaConnectAutoScaler
+metadata:
+  name: example-kafkaconnectautoscaler
+spec:
+  kcScaleTargetRef:
+    apiVersion: kafkaconnect.operator.io/v1alpha1
+    name: kafkaconnectcloud
+    kafkaConnectorName: connector-elastic
+  minTasks: 1
+  maxTasks: 4
+  metrics:
+  - type: Object
+    object:
+      describedObject: 
+        kind: KafkaConnect
+        name: kafkaconnectcloud
+        apiVersion: kafkaconnect.operator.io/v1alpha1
+      metric:
+        name: connector-elastic-lag
+      target:
+        type: Value
+        value: "10"
