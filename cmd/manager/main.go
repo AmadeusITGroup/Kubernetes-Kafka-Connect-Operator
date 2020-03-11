@@ -10,10 +10,10 @@ import (
 	// Import all Kubernetes client auth plugins (e.g. Azure, GCP, OIDC, etc.)
 	"k8s.io/client-go/rest"
 
-	"github.com/AmadeusITGroup/Kubernetes-Kafka-Connect-Operator/pkg/apis"
-	"github.com/AmadeusITGroup/Kubernetes-Kafka-Connect-Operator/pkg/controller"
+	"github.com/amadeusitgroup/kubernetes-kafka-connect-operator/pkg/apis"
+	"github.com/amadeusitgroup/kubernetes-kafka-connect-operator/pkg/controller"
 
-	"github.com/AmadeusITGroup/Kubernetes-Kafka-Connect-Operator/version"
+	"github.com/amadeusitgroup/kubernetes-kafka-connect-operator/version"
 
 	"github.com/operator-framework/operator-sdk/pkg/k8sutil"
 	kubemetrics "github.com/operator-framework/operator-sdk/pkg/kube-metrics"

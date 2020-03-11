@@ -17,7 +17,7 @@
 package v1alpha1
 
 import (
-	internalinterfaces "github.com/AmadeusITGroup/Kubernetes-Kafka-Connect-Operator/pkg/generated/informers/externalversions/internalinterfaces"
+	internalinterfaces "github.com/amadeusitgroup/kubernetes-kafka-connect-operator/pkg/generated/informers/externalversions/internalinterfaces"
 )
 
 // Interface provides access to all the informers in this group version.

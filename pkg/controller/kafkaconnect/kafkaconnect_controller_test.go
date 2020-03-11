@@ -24,7 +24,7 @@ import (
 	"testing"
 	"time"
 
-	kafkaconnectv1alpha1 "github.com/AmadeusITGroup/Kubernetes-Kafka-Connect-Operator/pkg/apis/kafkaconnect/v1alpha1"
+	kafkaconnectv1alpha1 "github.com/amadeusitgroup/kubernetes-kafka-connect-operator/pkg/apis/kafkaconnect/v1alpha1"
 
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
@@ -43,8 +43,8 @@ import (
 type fakeKCClient struct {
 }
 
-const configJSON string = "https://raw.githubusercontent.com/AmadeusITGroup/Kubernetes-Kafka-Connect-Operator/master/connector-examples/connector1.json"
-const wrongConfigJSON string = "https://raw.githubusercontent.com/AmadeusITGroup/Kubernetes-Kafka-Connect-Operator/master/connector-examples/connector2.json"
+const configJSON string = "https://raw.githubusercontent.com/amadeusitgroup/kubernetes-kafka-connect-operator/master/connector-examples/connector1.json"
+const wrongConfigJSON string = "https://raw.githubusercontent.com/amadeusitgroup/kubernetes-kafka-connect-operator/master/connector-examples/connector2.json"
 
 var call int = 0
 

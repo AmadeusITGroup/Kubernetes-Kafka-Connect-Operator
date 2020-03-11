@@ -18,7 +18,7 @@ spec:
     connectorConfigs:
       - name: connector-elastic
         exposeLagMetric: true
-        url: https://raw.githubusercontent.com/AmadeusITGroup/Kubernetes-Kafka-Connect-Operator/master/connector-examples/connector1.json
+        url: https://raw.githubusercontent.com/amadeusitgroup/kubernetes-kafka-connect-operator/master/connector-examples/connector1.json
   podSpec:
     containers:
       - name: kafkaconnect

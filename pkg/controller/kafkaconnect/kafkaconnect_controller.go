@@ -27,12 +27,12 @@ import (
 
 	"github.com/operator-framework/operator-sdk/pkg/k8sutil"
 
-	kafkaconnectv1alpha1 "github.com/AmadeusITGroup/Kubernetes-Kafka-Connect-Operator/pkg/apis/kafkaconnect/v1alpha1"
-	kafkaconnectcustommetrics "github.com/AmadeusITGroup/Kubernetes-Kafka-Connect-Operator/pkg/custommetrics"
-	clientset "github.com/AmadeusITGroup/Kubernetes-Kafka-Connect-Operator/pkg/generated/clientset/versioned"
-	informersfactory "github.com/AmadeusITGroup/Kubernetes-Kafka-Connect-Operator/pkg/generated/informers/externalversions"
-	"github.com/AmadeusITGroup/Kubernetes-Kafka-Connect-Operator/pkg/kafkaconnectclient"
-	kafkaconnectprovider "github.com/AmadeusITGroup/Kubernetes-Kafka-Connect-Operator/pkg/provider"
+	kafkaconnectv1alpha1 "github.com/amadeusitgroup/kubernetes-kafka-connect-operator/pkg/apis/kafkaconnect/v1alpha1"
+	kafkaconnectcustommetrics "github.com/amadeusitgroup/kubernetes-kafka-connect-operator/pkg/custommetrics"
+	clientset "github.com/amadeusitgroup/kubernetes-kafka-connect-operator/pkg/generated/clientset/versioned"
+	informersfactory "github.com/amadeusitgroup/kubernetes-kafka-connect-operator/pkg/generated/informers/externalversions"
+	"github.com/amadeusitgroup/kubernetes-kafka-connect-operator/pkg/kafkaconnectclient"
+	kafkaconnectprovider "github.com/amadeusitgroup/kubernetes-kafka-connect-operator/pkg/provider"
 	basecmd "github.com/kubernetes-incubator/custom-metrics-apiserver/pkg/cmd"
 	"github.com/kubernetes-incubator/custom-metrics-apiserver/pkg/provider"
 	appsv1 "k8s.io/api/apps/v1"

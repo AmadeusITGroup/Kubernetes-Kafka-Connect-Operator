@@ -17,9 +17,9 @@
 package fake
 
 import (
-	clientset "github.com/AmadeusITGroup/Kubernetes-Kafka-Connect-Operator/pkg/generated/clientset/versioned"
-	kafkaconnectv1alpha1 "github.com/AmadeusITGroup/Kubernetes-Kafka-Connect-Operator/pkg/generated/clientset/versioned/typed/kafkaconnect/v1alpha1"
-	fakekafkaconnectv1alpha1 "github.com/AmadeusITGroup/Kubernetes-Kafka-Connect-Operator/pkg/generated/clientset/versioned/typed/kafkaconnect/v1alpha1/fake"
+	clientset "github.com/amadeusitgroup/kubernetes-kafka-connect-operator/pkg/generated/clientset/versioned"
+	kafkaconnectv1alpha1 "github.com/amadeusitgroup/kubernetes-kafka-connect-operator/pkg/generated/clientset/versioned/typed/kafkaconnect/v1alpha1"
+	fakekafkaconnectv1alpha1 "github.com/amadeusitgroup/kubernetes-kafka-connect-operator/pkg/generated/clientset/versioned/typed/kafkaconnect/v1alpha1/fake"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/watch"
 	"k8s.io/client-go/discovery"
