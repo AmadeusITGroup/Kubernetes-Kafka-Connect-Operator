@@ -16,7 +16,7 @@ spec:
       containers:
         - name: kubernetes-kafka-connect-operator
           # Replace this with the built image name
-          image: docker.io/kafkaconnect/k8s-operator:1.0.0
+          image: docker.io/kafkaconnect/k8s-operator:latest
           command:
           - Kubernetes-Kafka-Connect-Operator
           imagePullPolicy: Always
@@ -35,7 +35,7 @@ spec:
                 fieldRef:
                   fieldPath: metadata.name
             - name: OPERATOR_NAME
-              value: "Kubernetes-Kafka-Connect-Operator"
+              value: "kubernetes-kafka-connect-operator"
 
 ---
 apiVersion: apiregistration.k8s.io/v1

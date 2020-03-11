@@ -1,33 +1,19 @@
-module github.com/AmadeusITGroup/Kubernetes-Kafka-Connect-Operator
+module github.com/amadeusitgroup/kubernetes-kafka-connect-operator
 
 go 1.13
 
 require (
-	github.com/Azure/azure-k8s-metrics-adapter v0.8.0 // indirect
-	github.com/Shopify/sarama v1.24.1
-	github.com/docker/cli v0.0.0-20200127141429-809cc8948d2a // indirect
-	github.com/docker/compose-on-kubernetes v0.4.24 // indirect
-	github.com/klauspost/cpuid v1.2.2 // indirect
+	github.com/Shopify/sarama v1.26.1
 	github.com/kubernetes-incubator/custom-metrics-apiserver v0.0.0-20190918110929-3d9be26a50eb
-	github.com/kubernetes-incubator/metrics-server v0.3.6 // indirect
 	github.com/operator-framework/operator-sdk v0.12.0
 	github.com/spf13/pflag v1.0.5
-	golang.org/x/mod v0.2.0 // indirect
-	golang.org/x/tools v0.0.0-20200218205902-f8e42dc47720 // indirect
-	golang.org/x/xerrors v0.0.0-20191204190536-9bdfabe68543 // indirect
-	gonum.org/v1/gonum v0.6.2 // indirect
 	k8s.io/api v0.0.0
 	k8s.io/apimachinery v0.0.0
 	k8s.io/client-go v11.0.0+incompatible
-	k8s.io/code-generator v0.17.3 // indirect
-	k8s.io/gengo v0.0.0-20200205140755-e0e292d8aa12 // indirect
 	k8s.io/klog v1.0.0
-	k8s.io/kube-openapi v0.0.0 // indirect
 	k8s.io/kubernetes v1.15.4
 	k8s.io/metrics v0.0.0
 	sigs.k8s.io/controller-runtime v0.3.0
-	sigs.k8s.io/structured-merge-diff v0.0.0-20190525122527-15d366b2352e // indirect
-	sigs.k8s.io/yaml v1.2.0 // indirect
 )
 
 // Pinned to kubernetes-1.15.4

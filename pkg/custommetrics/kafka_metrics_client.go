@@ -20,9 +20,9 @@ import (
 	"strings"
 	"sync"
 
-	kafkaconnectv1alpha1 "github.com/AmadeusITGroup/Kubernetes-Kafka-Connect-Operator/pkg/apis/kafkaconnect/v1alpha1"
-	kcc "github.com/AmadeusITGroup/Kubernetes-Kafka-Connect-Operator/pkg/kafkaconnectclient"
 	kafka "github.com/Shopify/sarama"
+	kafkaconnectv1alpha1 "github.com/amadeusitgroup/kubernetes-kafka-connect-operator/pkg/apis/kafkaconnect/v1alpha1"
+	kcc "github.com/amadeusitgroup/kubernetes-kafka-connect-operator/pkg/kafkaconnectclient"
 	"github.com/kubernetes-incubator/custom-metrics-apiserver/pkg/provider"
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/labels"

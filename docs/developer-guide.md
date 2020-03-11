@@ -15,7 +15,7 @@ In case you want to build the operator from the source code, e.g., to test a fix
 The easiest way to build the operator is by using operator-sdk cli
 
 ```sh
-$ operator-sdk build <image-tag>
+$ docker build -t <image-tag> -f build/Dockerfile .
 ```
 
 If you'd like to test/build the spark-operator locally, follow the instructions below:
@@ -23,16 +23,16 @@ If you'd like to test/build the spark-operator locally, follow the instructions 
 ```sh
 $ mkdir -p $GOPATH/src/github.com/AmadeusITGroup
 $ cd $GOPATH/src/github.com/AmadeusITGroup
-$ git clone git@github.com:AmadeusITGroup/Kubernetes-Kafka-Connect-Operator.git
+$ git clone git@github.com:amadeusitgroup/kubernetes-kafka-connect-operator.git
 $ cd Kubernetes-Kafka-Connect-Operator
 $ go test ./...
-$ operator-sdk build <image-tag>
+$ docker build -t <image-tag> -f build/Dockerfile .
 ```
 ### Update the auto-generated code
 
 To update the auto-generated CRD definitions, run the following command:
 ```sh
-$ cd $GOPATH/src/github.com/AmadeusITGroup/Kubernetes-Kafka-Connect-Operator
+$ cd $GOPATH/src/github.com/amadeusitgroup/kubernetes-kafka-connect-operator
 $ operator-sdk generate crds
 ```
 
@@ -42,5 +42,5 @@ $ go get -u k8s.io/code-generator
 ```
 Then run the following commands to update the code 
 ```sh
-$ $GOPATH/src/github.com/AmadeusITGroup/Kubernetes-Kafka-Connect-Operator/hack/update-codegen.sh
+$ $GOPATH/src/github.com/amadeusitgroup/kubernetes-kafka-connect-operator/hack/update-codegen.sh
 ```

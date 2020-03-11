@@ -23,8 +23,8 @@ import (
 	"sync"
 	"time"
 
-	kafkaconnectv1alpha1 "github.com/AmadeusITGroup/Kubernetes-Kafka-Connect-Operator/pkg/apis/kafkaconnect/v1alpha1"
-	"github.com/AmadeusITGroup/Kubernetes-Kafka-Connect-Operator/pkg/kafkaconnectclient"
+	kafkaconnectv1alpha1 "github.com/amadeusitgroup/kubernetes-kafka-connect-operator/pkg/apis/kafkaconnect/v1alpha1"
+	"github.com/amadeusitgroup/kubernetes-kafka-connect-operator/pkg/kafkaconnectclient"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	v1 "k8s.io/api/core/v1"
