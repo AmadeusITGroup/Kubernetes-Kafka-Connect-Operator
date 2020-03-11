@@ -85,7 +85,7 @@ func main() {
 
 	ctx := context.TODO()
 	// Become the leader before proceeding
-	err = leader.Become(ctx, "Kubernetes-Kafka-Connect-Operator-lock")
+	err = leader.Become(ctx, "kubernetes-kafka-connect-operator-lock")
 	if err != nil {
 		klog.Error(err, "")
 		os.Exit(1)

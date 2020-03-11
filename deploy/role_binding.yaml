@@ -1,13 +1,13 @@
 kind: RoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: Kubernetes-Kafka-Connect-Operator
+  name: kubernetes-kafka-connect-operator
 subjects:
 - kind: ServiceAccount
-  name: Kubernetes-Kafka-Connect-Operator
+  name: kubernetes-kafka-connect-operator
 roleRef:
   kind: Role
-  name: Kubernetes-Kafka-Connect-Operator
+  name: kubernetes-kafka-connect-operator
   apiGroup: rbac.authorization.k8s.io
 ---
 
@@ -18,7 +18,7 @@ metadata:
   namespace: kube-system
 subjects:
 - kind: ServiceAccount
-  name: Kubernetes-Kafka-Connect-Operator
+  name: kubernetes-kafka-connect-operator
   namespace: default
 roleRef:
   kind: Role

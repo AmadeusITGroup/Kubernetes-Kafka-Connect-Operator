@@ -8,5 +8,5 @@ roleRef:
   name: subjectaccessreviews-creator
 subjects:
 - kind: ServiceAccount
-  name: Kubernetes-Kafka-Connect-Operator
+  name: kubernetes-kafka-connect-operator
   namespace: default

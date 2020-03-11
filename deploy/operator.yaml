@@ -1,22 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: Kubernetes-Kafka-Connect-Operator
+  name: kubernetes-kafka-connect-operator
 spec:
   replicas: 1
   selector:
     matchLabels:
-      name: Kubernetes-Kafka-Connect-Operator
+      name: kubernetes-kafka-connect-operator
   template:
     metadata:
       labels:
-        name: Kubernetes-Kafka-Connect-Operator
+        name: kubernetes-kafka-connect-operator
     spec:
-      serviceAccountName: Kubernetes-Kafka-Connect-Operator
+      serviceAccountName: kubernetes-kafka-connect-operator
       containers:
-        - name: Kubernetes-Kafka-Connect-Operator
+        - name: kubernetes-kafka-connect-operator
           # Replace this with the built image name
-          image: docker.io/kafkaconnect/k8s-operator:0.0.2
+          image: docker.io/kafkaconnect/k8s-operator:1.0.0
           command:
           - Kubernetes-Kafka-Connect-Operator
           imagePullPolicy: Always
@@ -44,7 +44,7 @@ metadata:
   name: v1beta2.custom.metrics.k8s.io
 spec:
   service:
-    name: Kubernetes-Kafka-Connect-Operator-svc
+    name: kubernetes-kafka-connect-operator-svc
     namespace: default
   group: custom.metrics.k8s.io
   version: v1beta2
@@ -56,7 +56,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: Kubernetes-Kafka-Connect-Operator-svc
+  name: kubernetes-kafka-connect-operator-svc
 spec:
   ports:
   - name: https
@@ -66,4 +66,4 @@ spec:
     port: 80
     targetPort: 8080
   selector:
-    name: Kubernetes-Kafka-Connect-Operator
+    name: kubernetes-kafka-connect-operator
