@@ -1,15 +1,26 @@
-FROM registry.access.redhat.com/ubi8/ubi-minimal:latest
+FROM quay.io/slok/kube-code-generator:v1.15.10 as builder
+WORKDIR /go/src/github.com/AmadeusITGroup/Kubernetes-Kafka-Connect-Operator
 
+COPY --chown=codegen:codegen . .
+ENV CODEGEN_PKG /go/src/k8s.io/code-generator
+# Re-generate generated code
+RUN hack/update-codegen.sh
+USER root
+ENV GOOS=linux \
+    CGO_ENABLED=0
+RUN go build -o build/_output/bin/Kubernetes-Kafka-Connect-Operator \
+    -gcflags all=-trimpath=/go/src/github.com/AmadeusITGroup \
+    -asmflags all=-trimpath=/go/src/github.com/AmadeusITGroup \
+    github.com/AmadeusITGroup/Kubernetes-Kafka-Connect-Operator/cmd/manager
+
+FROM alpine
 ENV OPERATOR=/usr/local/bin/Kubernetes-Kafka-Connect-Operator \
     USER_UID=1001 \
     USER_NAME=Kubernetes-Kafka-Connect-Operator
 
-# install operator binary
-COPY build/_output/bin/Kubernetes-Kafka-Connect-Operator ${OPERATOR}
-
+COPY --from=builder /go/src/github.com/AmadeusITGroup/Kubernetes-Kafka-Connect-Operator/build/_output/bin/Kubernetes-Kafka-Connect-Operator ${OPERATOR}
 COPY build/bin /usr/local/bin
+
 RUN  /usr/local/bin/user_setup
-
 ENTRYPOINT ["/usr/local/bin/entrypoint"]
-
 USER ${USER_UID}

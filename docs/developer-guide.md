@@ -15,7 +15,7 @@ In case you want to build the operator from the source code, e.g., to test a fix
 The easiest way to build the operator is by using operator-sdk cli
 
 ```sh
-$ operator-sdk build <image-tag>
+$ docker build -t <image-tag> -f build/Dockerfile .
 ```
 
 If you'd like to test/build the spark-operator locally, follow the instructions below:
@@ -26,7 +26,7 @@ $ cd $GOPATH/src/github.com/AmadeusITGroup
 $ git clone git@github.com:AmadeusITGroup/Kubernetes-Kafka-Connect-Operator.git
 $ cd Kubernetes-Kafka-Connect-Operator
 $ go test ./...
-$ operator-sdk build <image-tag>
+$ docker build -t <image-tag> -f build/Dockerfile .
 ```
 ### Update the auto-generated code
 
