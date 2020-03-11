@@ -1,3 +1,5 @@
+[![Build Status](https://api.travis-ci.org/AmadeusITGroup/Kubernetes-Kafka-Connect-Operator.svg?branch=master)](https://api.travis-ci.org/AmadeusITGroup/Kubernetes-Kafka-Connect-Operator.svg?branch=master)
+
 # Kubernetes-Kafka-Connect-Operator
 
 A kubernetes operator to deploy and auto-scale KafkaConnect Application.

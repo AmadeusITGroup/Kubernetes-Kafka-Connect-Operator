@@ -1,0 +1,22 @@
+language: go
+dist: xenial
+sudo: required
+
+os: linux
+services:
+- docker
+env:
+  global:
+  - TAG=${TRAVIS_TAG:=${TRAVIS_COMMIT}}
+  - GH_URL=https://amadeusitgroup.github.io/Kubernetes-Kafka-Connect-Operator
+  matrix:
+  - CLUSTER=openshift
+  - CLUSTER=kubernetes
+
+go_import_path: github.com/amadeusitgroup/Kubernetes-Kafka-Connect-Operator
+
+cache:
+  directories:
+    - $HOME/.cache/go-build
+go:
+- 1.13.x
