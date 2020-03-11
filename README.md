@@ -1,5 +1,6 @@
 [![Build Status](https://api.travis-ci.org/AmadeusITGroup/Kubernetes-Kafka-Connect-Operator.svg?branch=master)](https://api.travis-ci.org/AmadeusITGroup/Kubernetes-Kafka-Connect-Operator.svg?branch=master)
 [![Go Report Card](https://goreportcard.com/badge/github.com/amadeusitgroup/Kubernetes-Kafka-Connect-Operator)](https://goreportcard.com/report/github.com/amadeusitgroup/Kubernetes-Kafka-Connect-Operator)
+[![license](https://img.shields.io/github/license/AmadeusITGroup/Kubernetes-Kafka-Connect-Operator.svg?style=flat-square)](LICENSE)
 
 # Kubernetes-Kafka-Connect-Operator
 
