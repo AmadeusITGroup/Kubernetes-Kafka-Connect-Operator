@@ -15,7 +15,7 @@
 package controller
 
 import (
-	"github.com/AmadeusITGroup/Kubernetes-Kafka-Connect-Operator/pkg/controller/kafkaconnectautoscaler"
+	"github.com/amadeusitgroup/kubernetes-kafka-connect-operator/pkg/controller/kafkaconnectautoscaler"
 )
 
 func init() {

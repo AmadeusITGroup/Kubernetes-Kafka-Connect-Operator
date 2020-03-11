@@ -51,7 +51,7 @@ rules:
 - apiGroups:
   - apps
   resourceNames:
-  - Kubernetes-Kafka-Connect-Operator
+  - kubernetes-kafka-connect-operator
   resources:
   - deployments/finalizers
   verbs:

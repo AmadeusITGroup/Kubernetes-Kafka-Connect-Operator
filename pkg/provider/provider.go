@@ -21,7 +21,7 @@ import (
 
 	"k8s.io/klog"
 
-	"github.com/AmadeusITGroup/Kubernetes-Kafka-Connect-Operator/pkg/custommetrics"
+	"github.com/amadeusitgroup/kubernetes-kafka-connect-operator/pkg/custommetrics"
 	"github.com/kubernetes-incubator/custom-metrics-apiserver/pkg/provider"
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/api/resource"
@@ -31,7 +31,7 @@ import (
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/metrics/pkg/apis/custom_metrics"
 
-	listers "github.com/AmadeusITGroup/Kubernetes-Kafka-Connect-Operator/pkg/generated/listers/kafkaconnect/v1alpha1"
+	listers "github.com/amadeusitgroup/kubernetes-kafka-connect-operator/pkg/generated/listers/kafkaconnect/v1alpha1"
 )
 
 type kafkaConnectProvider struct {

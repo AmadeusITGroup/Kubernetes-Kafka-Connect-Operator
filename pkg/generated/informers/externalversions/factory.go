@@ -21,9 +21,9 @@ import (
 	sync "sync"
 	time "time"
 
-	versioned "github.com/AmadeusITGroup/Kubernetes-Kafka-Connect-Operator/pkg/generated/clientset/versioned"
-	internalinterfaces "github.com/AmadeusITGroup/Kubernetes-Kafka-Connect-Operator/pkg/generated/informers/externalversions/internalinterfaces"
-	kafkaconnect "github.com/AmadeusITGroup/Kubernetes-Kafka-Connect-Operator/pkg/generated/informers/externalversions/kafkaconnect"
+	versioned "github.com/amadeusitgroup/kubernetes-kafka-connect-operator/pkg/generated/clientset/versioned"
+	internalinterfaces "github.com/amadeusitgroup/kubernetes-kafka-connect-operator/pkg/generated/informers/externalversions/internalinterfaces"
+	kafkaconnect "github.com/amadeusitgroup/kubernetes-kafka-connect-operator/pkg/generated/informers/externalversions/kafkaconnect"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	runtime "k8s.io/apimachinery/pkg/runtime"
 	schema "k8s.io/apimachinery/pkg/runtime/schema"

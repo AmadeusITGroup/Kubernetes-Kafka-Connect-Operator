@@ -27,8 +27,8 @@ CODEGEN_PKG=${CODEGEN_PKG:-$(cd "${SCRIPT_ROOT}"; ls -d -1 ./vendor/k8s.io/code-
 
 echo $CODEGEN_PKG
 bash "${CODEGEN_PKG}"/generate-groups.sh "deepcopy,client,informer,lister" \
-  github.com/AmadeusITGroup/Kubernetes-Kafka-Connect-Operator/pkg/generated \
-  github.com/AmadeusITGroup/Kubernetes-Kafka-Connect-Operator/pkg/apis \
+  github.com/amadeusitgroup/kubernetes-kafka-connect-operator/pkg/generated \
+  github.com/amadeusitgroup/kubernetes-kafka-connect-operator/pkg/apis \
   kafkaconnect:v1alpha1 \
   --go-header-file "${SCRIPT_ROOT}"/hack/boilerplate.go.txt
 

@@ -17,8 +17,8 @@
 package v1alpha1
 
 import (
-	v1alpha1 "github.com/AmadeusITGroup/Kubernetes-Kafka-Connect-Operator/pkg/apis/kafkaconnect/v1alpha1"
-	"github.com/AmadeusITGroup/Kubernetes-Kafka-Connect-Operator/pkg/generated/clientset/versioned/scheme"
+	v1alpha1 "github.com/amadeusitgroup/kubernetes-kafka-connect-operator/pkg/apis/kafkaconnect/v1alpha1"
+	"github.com/amadeusitgroup/kubernetes-kafka-connect-operator/pkg/generated/clientset/versioned/scheme"
 	rest "k8s.io/client-go/rest"
 )
 

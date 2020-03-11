@@ -15,7 +15,7 @@
 package controller
 
 import (
-	"github.com/AmadeusITGroup/Kubernetes-Kafka-Connect-Operator/pkg/controller/kafkaconnect"
+	"github.com/amadeusitgroup/kubernetes-kafka-connect-operator/pkg/controller/kafkaconnect"
 )
 
 func init() {

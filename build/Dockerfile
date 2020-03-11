@@ -1,5 +1,5 @@
 FROM quay.io/slok/kube-code-generator:v1.15.10 as builder
-WORKDIR /go/src/github.com/AmadeusITGroup/Kubernetes-Kafka-Connect-Operator
+WORKDIR /go/src/github.com/amadeusitgroup/kubernetes-kafka-connect-operator
 
 COPY --chown=codegen:codegen . .
 ENV CODEGEN_PKG /go/src/k8s.io/code-generator
@@ -11,14 +11,14 @@ ENV GOOS=linux \
 RUN go build -o build/_output/bin/Kubernetes-Kafka-Connect-Operator \
     -gcflags all=-trimpath=/go/src/github.com/AmadeusITGroup \
     -asmflags all=-trimpath=/go/src/github.com/AmadeusITGroup \
-    github.com/AmadeusITGroup/Kubernetes-Kafka-Connect-Operator/cmd/manager
+    github.com/amadeusitgroup/kubernetes-kafka-connect-operator/cmd/manager
 
 FROM alpine
 ENV OPERATOR=/usr/local/bin/Kubernetes-Kafka-Connect-Operator \
     USER_UID=1001 \
     USER_NAME=Kubernetes-Kafka-Connect-Operator
 
-COPY --from=builder /go/src/github.com/AmadeusITGroup/Kubernetes-Kafka-Connect-Operator/build/_output/bin/Kubernetes-Kafka-Connect-Operator ${OPERATOR}
+COPY --from=builder /go/src/github.com/amadeusitgroup/kubernetes-kafka-connect-operator/build/_output/bin/Kubernetes-Kafka-Connect-Operator ${OPERATOR}
 COPY build/bin /usr/local/bin
 
 RUN  /usr/local/bin/user_setup
