@@ -46,7 +46,7 @@ type fakeKCClient struct {
 const configJSON string = "https://raw.githubusercontent.com/amadeusitgroup/kubernetes-kafka-connect-operator/master/connector-examples/connector1.json"
 const wrongConfigJSON string = "https://raw.githubusercontent.com/amadeusitgroup/kubernetes-kafka-connect-operator/master/connector-examples/connector2.json"
 
-var call int = 0
+var call int
 
 func (fkcc *fakeKCClient) GetKafkaConnectConfig(connectorName string, port int32, kafkaConenctNamespacedname types.NamespacedName) (map[string]interface{}, error) {
 
@@ -147,7 +147,7 @@ func TestKafkaConnectControllerDeploymentCreate(t *testing.T) {
 		t.Fatalf("check status initialization failed: (expected: %v, found: %v)", expectedStatus, *foundStatus)
 	}
 
-	res, err = r.Reconcile(req)
+	_, err = r.Reconcile(req)
 	if err != nil {
 		t.Fatalf("2nd reconcile: (%v)", err)
 	}
@@ -323,7 +323,7 @@ func TestKafkaConnectControllerWithWrongConnectorConfig(t *testing.T) {
 		t.Fatalf("check status initialization failed: (expected: %v, found: %v)", expectedStatus, *foundStatus)
 	}
 
-	res, err = r.Reconcile(req)
+	_, err = r.Reconcile(req)
 	if err != nil {
 		t.Fatalf("2nd reconcile: (%v)", err)
 	}
