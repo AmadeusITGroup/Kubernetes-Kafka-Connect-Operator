@@ -341,7 +341,6 @@ func (utils *Utils) CheckGlobalStatus(instance *kafkaconnectv1alpha1.KafkaConnec
 
 	if !changed && deploymentComplete(foundDep, &(foundDep.Status)) && foundDep != nil && instance.Status.PodNb < *foundDep.Spec.Replicas {
 		changed = true
-		depIsUpdating = true
 		err := utils.ScaleDeployment(instance, foundDep)
 		if err != nil {
 			utilruntime.HandleError(err)
@@ -528,7 +527,7 @@ func (utils *Utils) checkService(instance *kafkaconnectv1alpha1.KafkaConnect) (*
 			Selector:  podLabels,
 			ClusterIP: corev1.ClusterIPNone,
 			Ports: []corev1.ServicePort{
-				corev1.ServicePort{
+				{
 					Protocol:   corev1.ProtocolTCP,
 					Name:       "kafkaconnect-rest",
 					Port:       port,
@@ -592,12 +591,12 @@ func (utils *Utils) checkIngress(instance *kafkaconnectv1alpha1.KafkaConnect) (*
 			},
 			Spec: extensions.IngressSpec{
 				Rules: []extensions.IngressRule{
-					extensions.IngressRule{
+					{
 						Host: fmt.Sprintf("%s.%s", instance.Name, instance.Spec.IngressSpec.ParentDomain),
 						IngressRuleValue: extensions.IngressRuleValue{
 							HTTP: &extensions.HTTPIngressRuleValue{
 								Paths: []extensions.HTTPIngressPath{
-									extensions.HTTPIngressPath{
+									{
 										Backend: extensions.IngressBackend{
 											ServiceName: fmt.Sprintf("%s-service", instance.Name),
 											ServicePort: intstr.FromInt(8083),
@@ -622,11 +621,11 @@ func (utils *Utils) checkIngress(instance *kafkaconnectv1alpha1.KafkaConnect) (*
 			},
 			Spec: extensions.IngressSpec{
 				Rules: []extensions.IngressRule{
-					extensions.IngressRule{
+					{
 						IngressRuleValue: extensions.IngressRuleValue{
 							HTTP: &extensions.HTTPIngressRuleValue{
 								Paths: []extensions.HTTPIngressPath{
-									extensions.HTTPIngressPath{
+									{
 										Path: fmt.Sprintf("/%s", instance.Name),
 										Backend: extensions.IngressBackend{
 											ServiceName: fmt.Sprintf("%s-service", instance.Name),

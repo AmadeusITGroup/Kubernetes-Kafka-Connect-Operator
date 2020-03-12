@@ -56,7 +56,9 @@ func (p *kafkaConnectProvider) GetMetricByName(name types.NamespacedName, info p
 
 	metricRequestInfo := custommetrics.NewMetricRequest(info, name)
 	val, err := p.kafkaMetricsClient.GetCustomMetric(metricRequestInfo, metricSelector)
-
+	if err != nil {
+		return nil, err
+	}
 	kc, err := p.kclister.KafkaConnects(name.Namespace).Get(name.Name)
 	if err != nil {
 		return nil, err
@@ -111,7 +113,7 @@ func (p *kafkaConnectProvider) GetMetricBySelector(namespace string, selector la
 	wg.Wait()
 	close(c)
 	var metricList = make([]custom_metrics.MetricValue, len(c))
-	var i int32 = 0
+	var i int32
 	for ele := range c {
 		metricList[i] = *ele
 		i++

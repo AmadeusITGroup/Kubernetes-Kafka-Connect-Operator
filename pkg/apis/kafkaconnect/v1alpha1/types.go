@@ -35,7 +35,7 @@ import (
 // this resource will create a Deployment and a Service by default
 // if IngressSpec is given, then it will also create an ingress obj
 type KafkaConnectSpec struct {
-	// PodSpec use the defualt k8s.io/api/core/v1/PodSpec
+	// PodSpec use the default k8s.io/api/core/v1/PodSpec
 	// for more information check https://godoc.org/k8s.io/api/core/v1#PodSpec
 	PodSpec corev1.PodSpec `json:"podSpec"`
 	// IngressSpec define how the ingress object should be created
@@ -243,18 +243,18 @@ func CreateFakeKafkaConnect() *KafkaConnect {
 		image                               = "test/kafkaconnectdockerimage:latest"
 		imagePullPolicy corev1.PullPolicy   = "IfNotPresent"
 		resourceLimits  corev1.ResourceList = map[corev1.ResourceName]resource.Quantity{
-			"cpu": resource.Quantity{
+			"cpu": {
 				Format: "200m",
 			},
-			"memory": resource.Quantity{
+			"memory": {
 				Format: "300Mi",
 			},
 		}
 		resourceRequests corev1.ResourceList = map[corev1.ResourceName]resource.Quantity{
-			"cpu": resource.Quantity{
+			"cpu": {
 				Format: "100m",
 			},
-			"memory": resource.Quantity{
+			"memory": {
 				Format: "80Mi",
 			},
 		}
@@ -275,7 +275,7 @@ func CreateFakeKafkaConnect() *KafkaConnect {
 			},
 			KafkaConnectorsSpec: &KafkaConnectorsSpec{
 				Configs: []KafkaConnectorConfig{
-					KafkaConnectorConfig{
+					{
 						Name: connectorName,
 						URL:  connectorURL,
 					},
@@ -284,12 +284,12 @@ func CreateFakeKafkaConnect() *KafkaConnect {
 			},
 			PodSpec: corev1.PodSpec{
 				Containers: []corev1.Container{
-					corev1.Container{
+					{
 						Name:            namespace,
 						Image:           image,
 						ImagePullPolicy: imagePullPolicy,
 						Ports: []corev1.ContainerPort{
-							corev1.ContainerPort{
+							{
 								ContainerPort: port,
 							},
 						},

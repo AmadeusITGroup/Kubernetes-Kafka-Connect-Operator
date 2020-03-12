@@ -742,7 +742,7 @@ func (r *ReconcileKafkaConnectAutoScaler) reconcileAutoscaler(wg *sync.WaitGroup
 		klog.V(4).Infof("proposing %v desired replicas (based on %s from %s) for %s", metricDesiredReplicas, metricName, metricTimestamp, reference)
 
 		rescaleMetric := ""
-		//TODO reveiw these condition
+		//TODO review these condition
 		if metricDesiredReplicas > desiredReplicas {
 			desiredReplicas = metricDesiredReplicas
 			rescaleMetric = metricName
@@ -803,7 +803,6 @@ func convertDesiredReplicasWithRules(currentReplicas, desiredReplicas, hpaMinRep
 	var possibleLimitingReason string
 
 	minimumAllowedReplicas = hpaMinReplicas
-	possibleLimitingReason = "the desired replica count is less than the minimum replica count"
 
 	// Do not upscale too much to prevent incorrect rapid increase of the number of master replicas caused by
 	// bogus CPU usage report from heapster/kubelet (like in issue #32304).
