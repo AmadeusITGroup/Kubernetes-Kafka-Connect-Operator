@@ -1,4 +1,4 @@
-FROM quay.io/slok/kube-code-generator:v1.15.10 as builder
+FROM quay.io/slok/kube-code-generator:v1.16.7 as builder
 WORKDIR /go/src/github.com/amadeusitgroup/kubernetes-kafka-connect-operator
 
 COPY --chown=codegen:codegen . .
