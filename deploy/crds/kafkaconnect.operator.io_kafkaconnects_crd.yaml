@@ -43,6 +43,18 @@ spec:
                     description: KafkaConnectorConfig define one connector will be
                       created if it's different from the existing one
                     properties:
+                      configMap:
+                        description: configMap is the link will connector config could
+                          be found
+                        properties:
+                          item:
+                            type: string
+                          name:
+                            type: string
+                        required:
+                        - item
+                        - name
+                        type: object
                       exposeLagMetric:
                         description: exposeLagMetric tell if lag should be expose
                           or not
@@ -62,7 +74,6 @@ spec:
                         type: string
                     required:
                     - name
-                    - url
                     type: object
                   type: array
                 initPodReplicas:
@@ -108,7 +119,7 @@ spec:
               format: int32
               type: integer
             podSpec:
-              description: PodSpec use the defualt k8s.io/api/core/v1/PodSpec for
+              description: PodSpec use the default k8s.io/api/core/v1/PodSpec for
                 more information check https://godoc.org/k8s.io/api/core/v1#PodSpec
               properties:
                 activeDeadlineSeconds:

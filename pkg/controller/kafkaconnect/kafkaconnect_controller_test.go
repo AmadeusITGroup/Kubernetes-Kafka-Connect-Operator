@@ -44,7 +44,8 @@ type fakeKCClient struct {
 }
 
 const configJSON string = "https://raw.githubusercontent.com/amadeusitgroup/kubernetes-kafka-connect-operator/master/connector-examples/connector1.json"
-const wrongConfigJSON string = "https://raw.githubusercontent.com/amadeusitgroup/kubernetes-kafka-connect-operator/master/connector-examples/connector2.json"
+
+var wrongConfigJSON string = "https://raw.githubusercontent.com/amadeusitgroup/kubernetes-kafka-connect-operator/master/connector-examples/connector2.json"
 
 var call int
 
@@ -260,7 +261,7 @@ func TestKafkaConnectControllerDeploymentCreate(t *testing.T) {
 
 func TestKafkaConnectControllerWithWrongConnectorConfig(t *testing.T) {
 	kafkaconnect := kafkaconnectv1alpha1.CreateFakeKafkaConnect()
-	kafkaconnect.Spec.KafkaConnectorsSpec.Configs[0].URL = wrongConfigJSON
+	kafkaconnect.Spec.KafkaConnectorsSpec.Configs[0].URL = &wrongConfigJSON
 	// Register the object in the fake client.
 	objs := []runtime.Object{
 		kafkaconnect,

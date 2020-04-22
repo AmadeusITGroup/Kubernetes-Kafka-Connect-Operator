@@ -27,6 +27,7 @@ import (
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/apimachinery/pkg/types"
+	corev1 "k8s.io/client-go/kubernetes/typed/core/v1"
 	"k8s.io/klog"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
@@ -45,13 +46,15 @@ type KafkaMetricsClient interface {
 
 // KafkaTopicMetricsClient is used to call kafka to get metrics per client
 type KafkaTopicMetricsClient struct {
-	client client.Client
+	client    client.Client
+	corev1Itf corev1.CoreV1Interface
 }
 
 // NewClient creates a client for calling Application
-func NewClient(client client.Client) KafkaMetricsClient {
+func NewClient(client client.Client, corev1Itf corev1.CoreV1Interface) KafkaMetricsClient {
 	return KafkaTopicMetricsClient{
-		client: client,
+		client:    client,
+		corev1Itf: corev1Itf,
 	}
 }
 
@@ -84,7 +87,9 @@ func (c KafkaTopicMetricsClient) getMetric(metricInfo MetricRequest) (*float64, 
 	if foundConfig == nil {
 		return nil, errors.NewBadRequest("cannot find config for metric")
 	}
-	conf, err := kcc.GetConfigFromURL(foundConfig.URL)
+	conf, err := kcc.GetKafkaConnectConfig(
+		c.corev1Itf.ConfigMaps(metricInfo.namespacedname.Namespace),
+		*foundConfig)
 	if err != nil {
 		return nil, err
 	}

@@ -23,7 +23,10 @@ import (
 	"net/http"
 	"time"
 
+	kafkaconnectv1alpha1 "github.com/amadeusitgroup/kubernetes-kafka-connect-operator/pkg/apis/kafkaconnect/v1alpha1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
+	corev1 "k8s.io/client-go/kubernetes/typed/core/v1"
 	"k8s.io/klog"
 )
 
@@ -122,22 +125,49 @@ func (kcc *KCClient) GetKafkaConnectorRunningTaskNb(connectorName string, port i
 
 }
 
-//GetConfigFromURL read the config from a url
-func GetConfigFromURL(url string) (map[string]interface{}, error) {
+//GetKafkaConnectConfig read the config from KafkaConnectorConfig either use URL or ConfigMap, URL has higher prio
+func GetKafkaConnectConfig(configMapItf corev1.ConfigMapInterface, config kafkaconnectv1alpha1.KafkaConnectorConfig) (map[string]interface{}, error) {
+	if config.URL != nil {
+		return getConfigFromURL(*config.URL)
+	} else if config.ConfigMap != nil {
+		return getConfigFromConfigMap(configMapItf, config.ConfigMap.Name, config.ConfigMap.Item)
+	} else {
+		return nil, errors.New(fmt.Sprint("no URL or configMap present in KafkaConnectorConfig: ", config.Name))
+	}
+
+}
+
+//getConfigFromConfigMap read the config from a configmap item
+func getConfigFromConfigMap(configMapItf corev1.ConfigMapInterface, name string, item string) (map[string]interface{}, error) {
+	configMap, err := configMapItf.Get(name, metav1.GetOptions{})
+	if err != nil {
+		return nil, err
+	}
+
+	if val, ok := configMap.Data[item]; ok {
+		return convertDataToMap([]byte(val))
+	}
+	return nil, errors.New(fmt.Sprint("cannot find item: ", item, "in configmap: ", name))
+}
+
+//getConfigFromURL read the config from a url
+func getConfigFromURL(url string) (map[string]interface{}, error) {
 	response, err := httpClient.Get(url)
 	if err != nil {
 		return nil, err
 	}
 	data, _ := ioutil.ReadAll(response.Body)
+	return convertDataToMap(data)
+}
 
+func convertDataToMap(data []byte) (map[string]interface{}, error) {
 	config := &map[string]interface{}{}
 	//set map with the byte
-	if err = json.Unmarshal(data, config); err != nil {
+	if err := json.Unmarshal(data, config); err != nil {
 		return nil, err
 	}
 
 	return *config, nil
-
 }
 
 //PutKafkaConnectConfig send config to kafka rest api

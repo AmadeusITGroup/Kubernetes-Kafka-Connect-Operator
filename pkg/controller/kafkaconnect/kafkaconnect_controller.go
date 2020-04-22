@@ -42,6 +42,7 @@ import (
 	"k8s.io/apimachinery/pkg/util/wait"
 	"k8s.io/client-go/dynamic"
 	"k8s.io/client-go/kubernetes"
+	corev1 "k8s.io/client-go/kubernetes/typed/core/v1"
 	"k8s.io/client-go/scale"
 	"k8s.io/client-go/tools/cache"
 	"k8s.io/client-go/tools/record"
@@ -112,6 +113,7 @@ type ReconcileKafkaConnect struct {
 	eventRecorder record.EventRecorder
 	scaleClient   scale.ScalesGetter
 	restMapper    meta.RESTMapper
+	corev1Itf     corev1.CoreV1Interface
 }
 
 // newReconciler returns a new reconcile.Reconciler
@@ -122,7 +124,7 @@ func newReconciler(mgr manager.Manager) reconcile.Reconciler {
 	k8sclientSet.RESTClient()
 	scaleKindResolver := scale.NewDiscoveryScaleKindResolver(k8sclientSet.Discovery())
 	scaleClient := scale.New(k8sclientSet.RESTClient(), mgr.GetRESTMapper(), dynamic.LegacyAPIPathResolverFunc, scaleKindResolver)
-
+	corev1Itf := k8sclientSet.CoreV1()
 	klog.Info("Starting Kafka connect Custom Metrics Adapter Server ")
 
 	cmd := &Adapter{}
@@ -159,7 +161,7 @@ func newReconciler(mgr manager.Manager) reconcile.Reconciler {
 	cmd.Flags().AddGoFlagSet(flag.CommandLine) // make sure we get the klog flags
 	cmd.Flags().Parse(os.Args)
 
-	KCprovider := cmd.makeProviderOrDie(mgr)
+	KCprovider := cmd.makeProviderOrDie(mgr, corev1Itf)
 	cmd.WithCustomMetrics(KCprovider)
 	go cmd.Run(wait.NeverStop)
 
@@ -170,6 +172,7 @@ func newReconciler(mgr manager.Manager) reconcile.Reconciler {
 		eventRecorder: eventRec,
 		scaleClient:   scaleClient,
 		restMapper:    mgr.GetRESTMapper(),
+		corev1Itf:     corev1Itf,
 	}
 }
 
@@ -225,14 +228,16 @@ func setupSignalHandler() (stopCh <-chan struct{}) {
 
 	return stop
 }
-func (a *Adapter) makeProviderOrDie(mgr manager.Manager) provider.CustomMetricsProvider {
+func (a *Adapter) makeProviderOrDie(mgr manager.Manager, corev1Itf corev1.CoreV1Interface) provider.CustomMetricsProvider {
 	clientSet := clientset.NewForConfigOrDie(mgr.GetConfig())
 	klog.Infof("watch %s", watchNameSpace)
-	informerFactory := informersfactory.NewSharedInformerFactoryWithOptions(clientSet, time.Second*30, informersfactory.WithNamespace(watchNameSpace))
+	informerFactory := informersfactory.NewSharedInformerFactoryWithOptions(
+		clientSet, time.Second*30, informersfactory.WithNamespace(watchNameSpace))
 	stopCh := setupSignalHandler()
 	kcInformer := informerFactory.Kafkaconnect().V1alpha1().KafkaConnects()
 
-	var KCprovider = kafkaconnectprovider.NewKafkaConnectProvider(kcInformer.Lister(), kafkaconnectcustommetrics.NewClient(mgr.GetClient()))
+	var KCprovider = kafkaconnectprovider.NewKafkaConnectProvider(kcInformer.Lister(),
+		kafkaconnectcustommetrics.NewClient(mgr.GetClient(), corev1Itf))
 	informerFactory.Start(stopCh)
 	// wait cache to be ready
 	klog.Info("wait cache to be ready")
