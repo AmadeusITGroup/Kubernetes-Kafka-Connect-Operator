@@ -22,6 +22,7 @@ import (
 	"os/signal"
 	"os/user"
 	"path/filepath"
+	"strings"
 	"syscall"
 	"time"
 
@@ -60,6 +61,8 @@ import (
 * business logic.  Delete these comments after modifying this file.*
  */
 var watchNameSpace string
+
+const ExportLagCustomMetrics = "EXPORT_LAG_CUSTOM_METRICS"
 
 // Add creates a new KafkaConnect Controller and adds it to the Manager. The Manager will set fields on the Controller
 // and Start it when the Manager is Started.
@@ -125,46 +128,49 @@ func newReconciler(mgr manager.Manager) reconcile.Reconciler {
 	scaleKindResolver := scale.NewDiscoveryScaleKindResolver(k8sclientSet.Discovery())
 	scaleClient := scale.New(k8sclientSet.RESTClient(), mgr.GetRESTMapper(), dynamic.LegacyAPIPathResolverFunc, scaleKindResolver)
 	corev1Itf := k8sclientSet.CoreV1()
-	klog.Info("Starting Kafka connect Custom Metrics Adapter Server ")
 
-	cmd := &Adapter{}
+	if strings.EqualFold("true", os.Getenv(ExportLagCustomMetrics)) {
 
-	kubeconfig := flag.Lookup("kubeconfig").Value.(flag.Getter).Get().(string)
-	var local = false
-	_, err := k8sutil.GetOperatorNamespace()
-	if err != nil {
-		if err == k8sutil.ErrRunLocal {
-			local = true
-		} else {
-			panic(err)
-		}
-	}
-	if local {
-		// If a flag is specified with the config location, use that
-		if len(kubeconfig) == 0 {
-			if len(os.Getenv("KUBECONFIG")) > 0 {
-				kubeconfig = os.Getenv("KUBECONFIG")
-			} else if usr, err := user.Current(); err == nil {
-				kubeconfig = filepath.Join(usr.HomeDir, ".kube", "config")
+		klog.Info("Starting Kafka connect Custom Metrics Adapter Server ")
+
+		cmd := &Adapter{}
+
+		kubeconfig := flag.Lookup("kubeconfig").Value.(flag.Getter).Get().(string)
+		var local = false
+		_, err := k8sutil.GetOperatorNamespace()
+		if err != nil {
+			if err == k8sutil.ErrRunLocal {
+				local = true
+			} else {
+				panic(err)
 			}
 		}
-		cmd.Flags().Set("lister-kubeconfig", kubeconfig)
-		cmd.Flags().Set("authentication-kubeconfig", kubeconfig)
-		cmd.Flags().Set("authorization-kubeconfig", kubeconfig)
+		if local {
+			// If a flag is specified with the config location, use that
+			if len(kubeconfig) == 0 {
+				if len(os.Getenv("KUBECONFIG")) > 0 {
+					kubeconfig = os.Getenv("KUBECONFIG")
+				} else if usr, err := user.Current(); err == nil {
+					kubeconfig = filepath.Join(usr.HomeDir, ".kube", "config")
+				}
+			}
+			cmd.Flags().Set("lister-kubeconfig", kubeconfig)
+			cmd.Flags().Set("authentication-kubeconfig", kubeconfig)
+			cmd.Flags().Set("authorization-kubeconfig", kubeconfig)
+		}
+
+		//cmd := &basecmd.AdapterBase{}
+		cmd.Flags().Set("cert-dir", "/tmp")
+		cmd.Flags().Set("secure-port", "6443")
+		cmd.Flags().Set("kubelet-insecure-tls", "")
+		cmd.Flags().Set("kubelet-preferred-address-types", "InternalIP,ExternalIP,Hostname")
+		cmd.Flags().AddGoFlagSet(flag.CommandLine) // make sure we get the klog flags
+		cmd.Flags().Parse(os.Args)
+
+		KCprovider := cmd.makeProviderOrDie(mgr, corev1Itf)
+		cmd.WithCustomMetrics(KCprovider)
+		go cmd.Run(wait.NeverStop)
 	}
-
-	//cmd := &basecmd.AdapterBase{}
-	cmd.Flags().Set("cert-dir", "/tmp")
-	cmd.Flags().Set("secure-port", "6443")
-	cmd.Flags().Set("kubelet-insecure-tls", "")
-	cmd.Flags().Set("kubelet-preferred-address-types", "InternalIP,ExternalIP,Hostname")
-	cmd.Flags().AddGoFlagSet(flag.CommandLine) // make sure we get the klog flags
-	cmd.Flags().Parse(os.Args)
-
-	KCprovider := cmd.makeProviderOrDie(mgr, corev1Itf)
-	cmd.WithCustomMetrics(KCprovider)
-	go cmd.Run(wait.NeverStop)
-
 	return &ReconcileKafkaConnect{
 		scheme:        mgr.GetScheme(),
 		client:        mgr.GetClient(),
