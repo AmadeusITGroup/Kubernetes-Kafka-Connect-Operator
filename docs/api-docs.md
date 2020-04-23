@@ -41,8 +41,16 @@ Resource Types:
  --- | ---
  `name` <br> string | the name of the connector
  `url` <br> string | the link of a [connector config](https://kafka.apache.org/documentation/#connect_configuring)
+ `configMap` <br> [ConfigMap](#v1alpha1_kafkaconnect_spec_connectors_connectorconfigs_configmap) | the configmap which contain the [connector config](https://kafka.apache.org/documentation/#connect_configuring), if both url and configMap exist, url will be used
  `taskMax` <br> int32 | *(optional)* <br> the `tasks.max` in the connector config. If not defined, during the init step, operator will fill this field by the value in the connector config. The value in this field will overwrite the value in the connector config and it will be updated by auto-scaler
  `exposeLagMetric` <br> boolean | *(optional)* <br> default: false <br> If the operator need to expose the connector's total lag in a customer metric or not. If true a metric with name `${connectorName}-lag` will be exposed for more example, check [the autoscaler example](../examples/v1alpha1/kafkaconnectautoscaler.yaml)
+
+### KafkaConnectSpecConnectorsConnectorConfigsConfigMap<a name="v1alpha1_kafkaconnect_spec_connectors_connectorconfigs_configmap"></a>
+ Field | Description
+ --- | ---
+ `name` <br> string | the name of the k8s configmap
+ `item` <br> string | the key of the data
+
 
 ### KafkaConnectSpecIngressSpec<a name="v1alpha1_kafkaconnect_spec_ingressspec"></a>
  Field | Description

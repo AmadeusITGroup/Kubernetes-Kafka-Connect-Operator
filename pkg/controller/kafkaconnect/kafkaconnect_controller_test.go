@@ -36,6 +36,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client/fake"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 
+	fakecorev1 "k8s.io/client-go/kubernetes/typed/core/v1/fake"
 	"k8s.io/client-go/tools/record"
 )
 
@@ -44,7 +45,8 @@ type fakeKCClient struct {
 }
 
 const configJSON string = "https://raw.githubusercontent.com/amadeusitgroup/kubernetes-kafka-connect-operator/master/connector-examples/connector1.json"
-const wrongConfigJSON string = "https://raw.githubusercontent.com/amadeusitgroup/kubernetes-kafka-connect-operator/master/connector-examples/connector2.json"
+
+var wrongConfigJSON string = "https://raw.githubusercontent.com/amadeusitgroup/kubernetes-kafka-connect-operator/master/connector-examples/connector2.json"
 
 var call int
 
@@ -99,7 +101,8 @@ func TestKafkaConnectControllerDeploymentCreate(t *testing.T) {
 	cl := fake.NewFakeClient(objs...)
 
 	// Create a ReconcileKafkaConnect object with the scheme and fake client.
-	r := &ReconcileKafkaConnect{client: cl, scheme: s, kcc: &fakeKCClient{}, eventRecorder: record.NewFakeRecorder(50)}
+	fakec := fakecorev1.FakeCoreV1{}
+	r := &ReconcileKafkaConnect{corev1Itf: &fakec, client: cl, scheme: s, kcc: &fakeKCClient{}, eventRecorder: record.NewFakeRecorder(50)}
 
 	// Mock request to simulate Reconcile() being called on an event for a
 	// watched resource.
@@ -260,7 +263,7 @@ func TestKafkaConnectControllerDeploymentCreate(t *testing.T) {
 
 func TestKafkaConnectControllerWithWrongConnectorConfig(t *testing.T) {
 	kafkaconnect := kafkaconnectv1alpha1.CreateFakeKafkaConnect()
-	kafkaconnect.Spec.KafkaConnectorsSpec.Configs[0].URL = wrongConfigJSON
+	kafkaconnect.Spec.KafkaConnectorsSpec.Configs[0].URL = &wrongConfigJSON
 	// Register the object in the fake client.
 	objs := []runtime.Object{
 		kafkaconnect,
@@ -274,7 +277,8 @@ func TestKafkaConnectControllerWithWrongConnectorConfig(t *testing.T) {
 	cl := fake.NewFakeClient(objs...)
 
 	// Create a ReconcileKafkaConnect object with the scheme and fake client.
-	r := &ReconcileKafkaConnect{client: cl, scheme: s, kcc: &fakeKCClient{}, eventRecorder: record.NewFakeRecorder(50)}
+	fakec := fakecorev1.FakeCoreV1{}
+	r := &ReconcileKafkaConnect{corev1Itf: &fakec, client: cl, scheme: s, kcc: &fakeKCClient{}, eventRecorder: record.NewFakeRecorder(50)}
 
 	// Mock request to simulate Reconcile() being called on an event for a
 	// watched resource.

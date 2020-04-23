@@ -57,14 +57,13 @@ type Utils struct {
 // initConnectorTaskMax init a taskmax for each connector
 func (utils *Utils) initConnectorTaskMax(wg *sync.WaitGroup, spec *kafkaconnectv1alpha1.KafkaConnectorConfig, connectorStatus *kafkaconnectv1alpha1.KafkaConnectorStatus, instance *kafkaconnectv1alpha1.KafkaConnect) {
 	defer wg.Done()
-
 	if spec.TasksMax != nil {
 		return
 	}
 	nb := int32(0)
 	utils.specUpdated = true
 	//get config bytes from the url
-	config, err := kafkaconnectclient.GetConfigFromURL(spec.URL)
+	config, err := kafkaconnectclient.GetKafkaConnectConfig(utils.corev1Itf.ConfigMaps(instance.Namespace), *spec)
 	// if there is error
 	if err != nil {
 		spec.TasksMax = &nb
@@ -96,7 +95,7 @@ func (utils *Utils) initConnectorTaskMax(wg *sync.WaitGroup, spec *kafkaconnectv
 	}
 }
 
-func (utils *Utils) geTotalTaskNb(instance *kafkaconnectv1alpha1.KafkaConnect) int32 {
+func (utils *Utils) getTotalTaskNb(instance *kafkaconnectv1alpha1.KafkaConnect) int32 {
 	res := int32(0)
 	for _, connectorSpec := range instance.Spec.KafkaConnectorsSpec.Configs {
 		res = res + *connectorSpec.TasksMax
@@ -126,6 +125,8 @@ func (utils *Utils) updateDefaultTaskMax(instance *kafkaconnectv1alpha1.KafkaCon
 // CheckGlobalStatus check all the status add see which object need to be updated
 func (utils *Utils) CheckGlobalStatus(instance *kafkaconnectv1alpha1.KafkaConnect) error {
 
+	oriInstance := instance.DeepCopy()
+	// if no status, create new status from config and update
 	if instance.Status == nil {
 		instance.Status = &kafkaconnectv1alpha1.KafkaConnectStatus{
 			Updating:             true,
@@ -141,9 +142,6 @@ func (utils *Utils) CheckGlobalStatus(instance *kafkaconnectv1alpha1.KafkaConnec
 			}
 		}
 	}
-
-	statusOri := instance.Status.DeepCopy()
-	// if no status, create new status from config and update
 	utils.updateDefaultTaskMax(instance)
 	if utils.specUpdated {
 		klog.Info("task max updated")
@@ -295,7 +293,7 @@ func (utils *Utils) CheckGlobalStatus(instance *kafkaconnectv1alpha1.KafkaConnec
 				return e.New("RESTApi not available")
 			}
 			// get config from url
-			expectedConfig, err := kafkaconnectclient.GetConfigFromURL(config.URL)
+			expectedConfig, err := kafkaconnectclient.GetKafkaConnectConfig(utils.corev1Itf.ConfigMaps(instance.Namespace), config)
 			if err != nil {
 				return err
 			}
@@ -353,7 +351,32 @@ func (utils *Utils) CheckGlobalStatus(instance *kafkaconnectv1alpha1.KafkaConnec
 	} else {
 		utils.checkUpdatingStatus(instance, true)
 	}
-	if !apiequality.Semantic.DeepEqual(statusOri, instance.Status) {
+
+	currentInstance := &kafkaconnectv1alpha1.KafkaConnect{}
+	err := utils.client.Get(context.TODO(), types.NamespacedName{Name: instance.Name, Namespace: instance.Namespace}, currentInstance)
+	if err != nil {
+		if errors.IsNotFound(err) {
+			// Request object not found, could have been deleted after reconcile request.
+			// Owned objects are automatically garbage collected. For additional cleanup logic use finalizers.
+			// Return and don't requeue
+			return nil
+		}
+		// Error reading the object - requeue the request.
+		return err
+	}
+	//the instance has been updated during this reconcil,
+	//we will do nothing and wait for the next reconcil
+	if !apiequality.Semantic.DeepEqual(oriInstance, currentInstance) {
+		klog.Warningf("instance %s:%s has been updated during the reconcilation, will apply the status to the new instance",
+			currentInstance.Namespace, currentInstance.Name)
+		klog.Warningf("the old instance is : %+v", oriInstance)
+		klog.Warningf("the new instance is : %+v", currentInstance)
+		currentInstance.Status = instance.Status
+		if err := utils.client.Status().Update(context.TODO(), currentInstance); err != nil {
+			utilruntime.HandleError(err)
+		}
+
+	} else if !apiequality.Semantic.DeepEqual(oriInstance.Status, instance.Status) {
 		if err := utils.client.Status().Update(context.TODO(), instance); err != nil {
 			utilruntime.HandleError(err)
 		}
@@ -392,7 +415,7 @@ func (utils *Utils) checkDeployment(instance *kafkaconnectv1alpha1.KafkaConnect)
 			Labels:    podLabels,
 		},
 	}
-	tasksTotal := utils.geTotalTaskNb(instance)
+	tasksTotal := utils.getTotalTaskNb(instance)
 	tpp := int32(1)
 	if instance.Spec.KafkaConnectorsSpec.TaskPerPod != nil {
 		tpp = *instance.Spec.KafkaConnectorsSpec.TaskPerPod

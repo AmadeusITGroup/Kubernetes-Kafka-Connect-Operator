@@ -5,6 +5,15 @@ metadata:
   name: kubernetes-kafka-connect-operator
 rules:
 - apiGroups:
+    - metrics.k8s.io
+  resources:
+    - pods
+    - nodes
+  verbs:
+    - get
+    - list
+    - watch
+- apiGroups:
   - ""
   resources:
   - pods

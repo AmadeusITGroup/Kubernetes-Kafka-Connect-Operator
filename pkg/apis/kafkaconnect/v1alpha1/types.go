@@ -50,6 +50,11 @@ type KafkaConnectSpec struct {
 	KafkaConnectRestAPIPort int32 `json:"kafkaConnectRestAPIPort"`
 }
 
+type ConfigMap struct {
+	Name string `json:"name"`
+	Item string `json:"item"`
+}
+
 // IngressSpec defines how we need to create ingress to expose the kafka connect rest api
 type IngressSpec struct {
 	// Style define the style of the ingress created, either a subDomain or a path
@@ -87,7 +92,9 @@ type KafkaConnectorConfig struct {
 	// Name is the Name should be used as the connector
 	Name string `json:"name"`
 	// URL is the link will connector config could be found
-	URL string `json:"url"`
+	URL *string `json:"url,omitempty"`
+	// configMap is the link will connector config could be found
+	ConfigMap *ConfigMap `json:"configMap,omitempty"`
 	// TasksMax define number of task for connector it will override the value in config. the default value is the nb defined in the config
 	TasksMax *int32 `json:"taskMax,omitempty"`
 	//exposeLagMetric tell if lag should be expose or not
@@ -277,7 +284,7 @@ func CreateFakeKafkaConnect() *KafkaConnect {
 				Configs: []KafkaConnectorConfig{
 					{
 						Name: connectorName,
-						URL:  connectorURL,
+						URL:  &connectorURL,
 					},
 				},
 				TaskPerPod: &taskPerPod,
