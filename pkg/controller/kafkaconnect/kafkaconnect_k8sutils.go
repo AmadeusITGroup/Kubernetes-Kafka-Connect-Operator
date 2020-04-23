@@ -147,8 +147,8 @@ func (utils *Utils) CheckGlobalStatus(instance *kafkaconnectv1alpha1.KafkaConnec
 		klog.Info("task max updated")
 		err := utils.client.Update(context.TODO(), instance)
 		if err != nil {
-			klog.Errorf("cannot update the kafka connect object %s:%s",
-				instance.Namespace, instance.Name, err)
+			klog.Errorf("cannot update the kafka connect object %s:%s, %s",
+				instance.Namespace, instance.Name, err.Error())
 		}
 		return err
 	}
