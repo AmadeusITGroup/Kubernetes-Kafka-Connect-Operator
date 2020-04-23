@@ -36,6 +36,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client/fake"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 
+	fakecorev1 "k8s.io/client-go/kubernetes/typed/core/v1/fake"
 	"k8s.io/client-go/tools/record"
 )
 
@@ -100,7 +101,8 @@ func TestKafkaConnectControllerDeploymentCreate(t *testing.T) {
 	cl := fake.NewFakeClient(objs...)
 
 	// Create a ReconcileKafkaConnect object with the scheme and fake client.
-	r := &ReconcileKafkaConnect{client: cl, scheme: s, kcc: &fakeKCClient{}, eventRecorder: record.NewFakeRecorder(50)}
+	fakec := fakecorev1.FakeCoreV1{}
+	r := &ReconcileKafkaConnect{corev1Itf: &fakec, client: cl, scheme: s, kcc: &fakeKCClient{}, eventRecorder: record.NewFakeRecorder(50)}
 
 	// Mock request to simulate Reconcile() being called on an event for a
 	// watched resource.
@@ -275,7 +277,8 @@ func TestKafkaConnectControllerWithWrongConnectorConfig(t *testing.T) {
 	cl := fake.NewFakeClient(objs...)
 
 	// Create a ReconcileKafkaConnect object with the scheme and fake client.
-	r := &ReconcileKafkaConnect{client: cl, scheme: s, kcc: &fakeKCClient{}, eventRecorder: record.NewFakeRecorder(50)}
+	fakec := fakecorev1.FakeCoreV1{}
+	r := &ReconcileKafkaConnect{corev1Itf: &fakec, client: cl, scheme: s, kcc: &fakeKCClient{}, eventRecorder: record.NewFakeRecorder(50)}
 
 	// Mock request to simulate Reconcile() being called on an event for a
 	// watched resource.
