@@ -10,7 +10,7 @@ require (
 	github.com/json-iterator/go v1.1.9 // indirect
 	github.com/kubernetes-incubator/custom-metrics-apiserver v0.0.0-20190918110929-3d9be26a50eb
 	github.com/mailru/easyjson v0.7.1 // indirect
-	github.com/operator-framework/operator-sdk v0.15.2
+	github.com/operator-framework/operator-sdk v0.17.0
 	github.com/spf13/pflag v1.0.5
 	golang.org/x/net v0.0.0-20200421231249-e086a090c8fd // indirect
 	golang.org/x/tools v0.0.0-20200422022333-3d57cf2e726e // indirect
