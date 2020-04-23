@@ -15,7 +15,7 @@ require (
 	golang.org/x/net v0.0.0-20200421231249-e086a090c8fd // indirect
 	golang.org/x/tools v0.0.0-20200422022333-3d57cf2e726e // indirect
 	gonum.org/v1/gonum v0.7.0 // indirect
-	k8s.io/api v0.0.0
+	k8s.io/api v0.18.2
 	k8s.io/apimachinery v0.0.0
 	k8s.io/client-go v12.0.0+incompatible
 	k8s.io/code-generator v0.18.2 // indirect
