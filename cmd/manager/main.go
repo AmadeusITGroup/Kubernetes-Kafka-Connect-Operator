@@ -9,7 +9,6 @@ import (
 	"strings"
 
 	// Import all Kubernetes client auth plugins (e.g. Azure, GCP, OIDC, etc.)
-	"k8s.io/client-go/rest"
 
 	"github.com/amadeusitgroup/kubernetes-kafka-connect-operator/pkg/apis"
 	"github.com/amadeusitgroup/kubernetes-kafka-connect-operator/pkg/controller"
@@ -17,7 +16,6 @@ import (
 	"github.com/amadeusitgroup/kubernetes-kafka-connect-operator/version"
 
 	"github.com/operator-framework/operator-sdk/pkg/k8sutil"
-	kubemetrics "github.com/operator-framework/operator-sdk/pkg/kube-metrics"
 	"github.com/operator-framework/operator-sdk/pkg/leader"
 	"github.com/operator-framework/operator-sdk/pkg/log/zap"
 	"github.com/operator-framework/operator-sdk/pkg/metrics"
@@ -34,14 +32,12 @@ import (
 
 // Change below variables to serve metrics on different host or port.
 var (
-	metricsHost               = "0.0.0.0"
-	metricsPort         int32 = 8383
-	operatorMetricsPort int32 = 8686
+	metricsHost       = "0.0.0.0"
+	metricsPort int32 = 8383
 )
 
 const (
-	EnableServiceMonitors       = "ENABLE_SERVICE_MONITORS"
-	ExportOperatorCustomMetrics = "EXPORT_OPERATOR_CUSTOM_METRICS"
+	EnableServiceMonitors = "ENABLE_SERVICE_MONITORS"
 )
 
 func printVersion() {
@@ -121,17 +117,10 @@ func main() {
 		os.Exit(1)
 	}
 
-	if strings.EqualFold("true", os.Getenv(ExportOperatorCustomMetrics)) {
-		if err = serveCRMetrics(cfg); err != nil {
-			klog.Infof("Could not generate and serve custom resource metrics %s", err.Error())
-		}
-	}
-
-	if !strings.EqualFold("false", os.Getenv(EnableServiceMonitors)) {
+	if strings.EqualFold("true", os.Getenv(EnableServiceMonitors)) {
 		// Add to the below struct any other metrics ports you want to expose.
 		servicePorts := []v1.ServicePort{
 			{Port: metricsPort, Name: metrics.OperatorPortName, Protocol: v1.ProtocolTCP, TargetPort: intstr.IntOrString{Type: intstr.Int, IntVal: metricsPort}},
-			{Port: operatorMetricsPort, Name: metrics.CRPortName, Protocol: v1.ProtocolTCP, TargetPort: intstr.IntOrString{Type: intstr.Int, IntVal: operatorMetricsPort}},
 		}
 		// Create Service object to expose the metrics port(s).
 		service, err := metrics.CreateMetricsService(ctx, cfg, servicePorts)
@@ -160,29 +149,4 @@ func main() {
 		os.Exit(1)
 	}
 
-}
-
-// serveCRMetrics gets the Operator/CustomResource GVKs and generates metrics based on those types.
-// It serves those metrics on "http://metricsHost:operatorMetricsPort".
-func serveCRMetrics(cfg *rest.Config) error {
-	// Below function returns filtered operator/CustomResource specific GVKs.
-	// For more control override the below GVK list with your own custom logic.
-	filteredGVK, err := k8sutil.GetGVKsFromAddToScheme(apis.AddToScheme)
-	if err != nil {
-		return err
-	}
-	// Get the namespace the operator is currently deployed in.
-	operatorNs, err := k8sutil.GetOperatorNamespace()
-	if err != nil {
-		return err
-	}
-
-	// To generate metrics in other namespaces, add the values below.
-	ns := []string{operatorNs}
-	// Generate and serve custom resource specific metrics.
-	err = kubemetrics.GenerateAndServeCRMetrics(cfg, ns, filteredGVK, metricsHost, operatorMetricsPort)
-	if err != nil {
-		return err
-	}
-	return nil
 }
