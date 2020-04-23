@@ -145,8 +145,12 @@ func (utils *Utils) CheckGlobalStatus(instance *kafkaconnectv1alpha1.KafkaConnec
 	utils.updateDefaultTaskMax(instance)
 	if utils.specUpdated {
 		klog.Info("task max updated")
-		utils.client.Update(context.TODO(), instance)
-		return nil
+		err := utils.client.Update(context.TODO(), instance)
+		if err != nil {
+			klog.Errorf("cannot update the kafka connect object %s:%s",
+				instance.Namespace, instance.Name, err)
+		}
+		return err
 	}
 
 	// if status exist, check deployement config, service and ingress object

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"runtime"
+	"strings"
 
 	// Import all Kubernetes client auth plugins (e.g. Azure, GCP, OIDC, etc.)
 	"k8s.io/client-go/rest"
@@ -36,6 +37,11 @@ var (
 	metricsHost               = "0.0.0.0"
 	metricsPort         int32 = 8383
 	operatorMetricsPort int32 = 8686
+)
+
+const (
+	EnableServiceMonitors       = "ENABLE_SERVICE_MONITORS"
+	ExportOperatorCustomMetrics = "EXPORT_OPERATOR_CUSTOM_METRICS"
 )
 
 func printVersion() {
@@ -115,31 +121,34 @@ func main() {
 		os.Exit(1)
 	}
 
-	if err = serveCRMetrics(cfg); err != nil {
-		klog.Infof("Could not generate and serve custom resource metrics %s", err.Error())
+	if strings.EqualFold("true", os.Getenv(ExportOperatorCustomMetrics)) {
+		if err = serveCRMetrics(cfg); err != nil {
+			klog.Infof("Could not generate and serve custom resource metrics %s", err.Error())
+		}
 	}
 
-	// Add to the below struct any other metrics ports you want to expose.
-	servicePorts := []v1.ServicePort{
-		{Port: metricsPort, Name: metrics.OperatorPortName, Protocol: v1.ProtocolTCP, TargetPort: intstr.IntOrString{Type: intstr.Int, IntVal: metricsPort}},
-		{Port: operatorMetricsPort, Name: metrics.CRPortName, Protocol: v1.ProtocolTCP, TargetPort: intstr.IntOrString{Type: intstr.Int, IntVal: operatorMetricsPort}},
-	}
-	// Create Service object to expose the metrics port(s).
-	service, err := metrics.CreateMetricsService(ctx, cfg, servicePorts)
-	if err != nil {
-		klog.Infof("Could not create metrics Service %s", err.Error())
-	}
-
-	// CreateServiceMonitors will automatically create the prometheus-operator ServiceMonitor resources
-	// necessary to configure Prometheus to scrape metrics from this operator.
-	services := []*v1.Service{service}
-	_, err = metrics.CreateServiceMonitors(cfg, namespace, services)
-	if err != nil {
-		klog.Infof("Could not create ServiceMonitor object %s", err.Error())
-		// If this operator is deployed to a cluster without the prometheus-operator running, it will return
-		// ErrServiceMonitorNotPresent, which can be used to safely skip ServiceMonitor creation.
-		if err == metrics.ErrServiceMonitorNotPresent {
-			klog.Info("Install prometheus-operator in your cluster to create ServiceMonitor objects ", err.Error())
+	if !strings.EqualFold("false", os.Getenv(EnableServiceMonitors)) {
+		// Add to the below struct any other metrics ports you want to expose.
+		servicePorts := []v1.ServicePort{
+			{Port: metricsPort, Name: metrics.OperatorPortName, Protocol: v1.ProtocolTCP, TargetPort: intstr.IntOrString{Type: intstr.Int, IntVal: metricsPort}},
+			{Port: operatorMetricsPort, Name: metrics.CRPortName, Protocol: v1.ProtocolTCP, TargetPort: intstr.IntOrString{Type: intstr.Int, IntVal: operatorMetricsPort}},
+		}
+		// Create Service object to expose the metrics port(s).
+		service, err := metrics.CreateMetricsService(ctx, cfg, servicePorts)
+		if err != nil {
+			klog.Infof("Could not create metrics Service %s", err.Error())
+		}
+		// CreateServiceMonitors will automatically create the prometheus-operator ServiceMonitor resources
+		// necessary to configure Prometheus to scrape metrics from this operator.
+		services := []*v1.Service{service}
+		_, err = metrics.CreateServiceMonitors(cfg, namespace, services)
+		if err != nil {
+			klog.Infof("Could not create ServiceMonitor object %s", err.Error())
+			// If this operator is deployed to a cluster without the prometheus-operator running, it will return
+			// ErrServiceMonitorNotPresent, which can be used to safely skip ServiceMonitor creation.
+			if err == metrics.ErrServiceMonitorNotPresent {
+				klog.Info("Install prometheus-operator in your cluster to create ServiceMonitor objects ", err.Error())
+			}
 		}
 	}
 
