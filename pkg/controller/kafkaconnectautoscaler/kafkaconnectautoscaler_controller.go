@@ -373,13 +373,13 @@ func setConditionInList(inputList []autoscalingv2.HorizontalPodAutoscalerConditi
 	return resList
 }
 
-func (r *ReconcileKafkaConnectAutoScaler) getUnableComputeReplicaCountCondition(autoscaler *kafkaconnectv1alpha1.KafkaConnectAutoScaler, reason string, err error) (condition autoscalingv2.HorizontalPodAutoscalerCondition) {
-	r.eventRecorder.Event(autoscaler, v1.EventTypeWarning, reason, err.Error())
+func (r *ReconcileKafkaConnectAutoScaler) getUnableComputeReplicaCountCondition(autoscaler *kafkaconnectv1alpha1.KafkaConnectAutoScaler, reason string, err string) (condition autoscalingv2.HorizontalPodAutoscalerCondition) {
+	r.eventRecorder.Event(autoscaler, v1.EventTypeWarning, reason, err)
 	return autoscalingv2.HorizontalPodAutoscalerCondition{
 		Type:    autoscalingv2.ScalingActive,
 		Status:  v1.ConditionFalse,
 		Reason:  reason,
-		Message: fmt.Sprintf("the HPA was unable to compute the replica count: %v", err),
+		Message: fmt.Sprintf("the HPA was unable to compute the replica count: %s", err),
 	}
 }
 
@@ -387,7 +387,7 @@ func (r *ReconcileKafkaConnectAutoScaler) getUnableComputeReplicaCountCondition(
 func (r *ReconcileKafkaConnectAutoScaler) computeStatusForPodsMetric(currentReplicas int32, metricSpec autoscalingv2.MetricSpec, autoscaler *kafkaconnectv1alpha1.KafkaConnectAutoScaler, selector labels.Selector, status *autoscalingv2.MetricStatus, metricSelector labels.Selector) (replicaCountProposal int32, timestampProposal time.Time, metricNameProposal string, condition autoscalingv2.HorizontalPodAutoscalerCondition, err error) {
 	replicaCountProposal, utilizationProposal, timestampProposal, err := r.replicaCalc.GetMetricReplicas(currentReplicas, metricSpec.Pods.Target.AverageValue.MilliValue(), metricSpec.Pods.Metric.Name, autoscaler.Namespace, selector, metricSelector)
 	if err != nil {
-		condition = r.getUnableComputeReplicaCountCondition(autoscaler, "FailedGetPodsMetric", err)
+		condition = r.getUnableComputeReplicaCountCondition(autoscaler, "FailedGetPodsMetric", err.Error())
 		return 0, timestampProposal, "", condition, err
 	}
 	*status = autoscalingv2.MetricStatus{
@@ -411,7 +411,7 @@ func (r *ReconcileKafkaConnectAutoScaler) computeStatusForObjectMetric(specRepli
 	if metricSpec.Object.Target.Type == autoscalingv2.ValueMetricType {
 		replicaCountProposal, utilizationProposal, timestampProposal, err := r.replicaCalc.GetObjectMetricReplicas(specReplicas, metricSpec.Object.Target.Value.MilliValue(), metricSpec.Object.Metric.Name, autoscaler.Namespace, &metricSpec.Object.DescribedObject, selector, metricSelector)
 		if err != nil {
-			condition := r.getUnableComputeReplicaCountCondition(autoscaler, "FailedGetObjectMetric", err)
+			condition := r.getUnableComputeReplicaCountCondition(autoscaler, "FailedGetObjectMetric", err.Error())
 			klog.Error("cannot get metric ", err)
 			return 0, timestampProposal, "", condition, err
 		}
@@ -432,7 +432,7 @@ func (r *ReconcileKafkaConnectAutoScaler) computeStatusForObjectMetric(specRepli
 	} else if metricSpec.Object.Target.Type == autoscalingv2.AverageValueMetricType {
 		replicaCountProposal, utilizationProposal, timestampProposal, err := r.replicaCalc.GetObjectPerPodMetricReplicas(statusReplicas, metricSpec.Object.Target.AverageValue.MilliValue(), metricSpec.Object.Metric.Name, autoscaler.Namespace, &metricSpec.Object.DescribedObject, metricSelector)
 		if err != nil {
-			condition := r.getUnableComputeReplicaCountCondition(autoscaler, "FailedGetObjectMetric", err)
+			condition := r.getUnableComputeReplicaCountCondition(autoscaler, "FailedGetObjectMetric", err.Error())
 			return 0, time.Time{}, "", condition, fmt.Errorf("failed to get %s object metric: %v", metricSpec.Object.Metric.Name, err)
 		}
 		*status = autoscalingv2.MetricStatus{
@@ -451,7 +451,7 @@ func (r *ReconcileKafkaConnectAutoScaler) computeStatusForObjectMetric(specRepli
 	}
 	errMsg := "invalid object metric source: neither a value target nor an average value target was set"
 	err = fmt.Errorf(errMsg)
-	condition = r.getUnableComputeReplicaCountCondition(autoscaler, "FailedGetObjectMetric", err)
+	condition = r.getUnableComputeReplicaCountCondition(autoscaler, "FailedGetObjectMetric", err.Error())
 	return 0, time.Time{}, "", condition, err
 }
 
@@ -462,7 +462,7 @@ func (r *ReconcileKafkaConnectAutoScaler) computeStatusForResourceMetric(current
 		var rawProposal int64
 		replicaCountProposal, rawProposal, timestampProposal, err := r.replicaCalc.GetRawResourceReplicas(currentReplicas, metricSpec.Resource.Target.AverageValue.MilliValue(), metricSpec.Resource.Name, autoscaler.Namespace, selector)
 		if err != nil {
-			condition = r.getUnableComputeReplicaCountCondition(autoscaler, "FailedGetResourceMetric", err)
+			condition = r.getUnableComputeReplicaCountCondition(autoscaler, "FailedGetResourceMetric", err.Error())
 			return 0, time.Time{}, "", condition, fmt.Errorf("failed to get %s utilization: %v", metricSpec.Resource.Name, err)
 		}
 		metricNameProposal = fmt.Sprintf("%s resource", metricSpec.Resource.Name)
@@ -480,7 +480,7 @@ func (r *ReconcileKafkaConnectAutoScaler) computeStatusForResourceMetric(current
 	if metricSpec.Resource.Target.AverageUtilization == nil {
 		errMsg := "invalid resource metric source: neither a utilization target nor a value target was set"
 		err = fmt.Errorf(errMsg)
-		condition = r.getUnableComputeReplicaCountCondition(autoscaler, "FailedGetResourceMetric", err)
+		condition = r.getUnableComputeReplicaCountCondition(autoscaler, "FailedGetResourceMetric", err.Error())
 		return 0, time.Time{}, "", condition, fmt.Errorf(errMsg)
 	}
 	targetUtilization := *metricSpec.Resource.Target.AverageUtilization
@@ -489,7 +489,7 @@ func (r *ReconcileKafkaConnectAutoScaler) computeStatusForResourceMetric(current
 	replicaCountProposal, percentageProposal, rawProposal, timestampProposal, err = r.replicaCalc.GetResourceReplicas(currentReplicas, targetUtilization, metricSpec.Resource.Name, autoscaler.Namespace, selector)
 
 	if err != nil {
-		condition = r.getUnableComputeReplicaCountCondition(autoscaler, "FailedGetResourceMetric", err)
+		condition = r.getUnableComputeReplicaCountCondition(autoscaler, "FailedGetResourceMetric", err.Error())
 		return 0, time.Time{}, "", condition, fmt.Errorf("failed to get %s utilization: %v", metricSpec.Resource.Name, err)
 	}
 	metricNameProposal = fmt.Sprintf("%s resource utilization (percentage of request)", metricSpec.Resource.Name)
@@ -512,7 +512,7 @@ func (r *ReconcileKafkaConnectAutoScaler) computeStatusForExternalMetric(specRep
 	if metricSpec.External.Target.AverageValue != nil {
 		replicaCountProposal, utilizationProposal, timestampProposal, err := r.replicaCalc.GetExternalPerPodMetricReplicas(statusReplicas, metricSpec.External.Target.AverageValue.MilliValue(), metricSpec.External.Metric.Name, autoscaler.Namespace, metricSpec.External.Metric.Selector)
 		if err != nil {
-			condition = r.getUnableComputeReplicaCountCondition(autoscaler, "FailedGetExternalMetric", err)
+			condition = r.getUnableComputeReplicaCountCondition(autoscaler, "FailedGetExternalMetric", err.Error())
 			return 0, time.Time{}, "", condition, fmt.Errorf("failed to get %s external metric: %v", metricSpec.External.Metric.Name, err)
 		}
 		*status = autoscalingv2.MetricStatus{
@@ -532,7 +532,7 @@ func (r *ReconcileKafkaConnectAutoScaler) computeStatusForExternalMetric(specRep
 	if metricSpec.External.Target.Value != nil {
 		replicaCountProposal, utilizationProposal, timestampProposal, err := r.replicaCalc.GetExternalMetricReplicas(specReplicas, metricSpec.External.Target.Value.MilliValue(), metricSpec.External.Metric.Name, autoscaler.Namespace, metricSpec.External.Metric.Selector, selector)
 		if err != nil {
-			condition = r.getUnableComputeReplicaCountCondition(autoscaler, "FailedGetExternalMetric", err)
+			condition = r.getUnableComputeReplicaCountCondition(autoscaler, "FailedGetExternalMetric", err.Error())
 			return 0, time.Time{}, "", condition, fmt.Errorf("failed to get external metric %s: %v", metricSpec.External.Metric.Name, err)
 		}
 		*status = autoscalingv2.MetricStatus{
@@ -551,7 +551,7 @@ func (r *ReconcileKafkaConnectAutoScaler) computeStatusForExternalMetric(specRep
 	}
 	errMsg := "invalid external metric source: neither a value target nor an average value target was set"
 	err = fmt.Errorf(errMsg)
-	condition = r.getUnableComputeReplicaCountCondition(autoscaler, "FailedGetExternalMetric", err)
+	condition = r.getUnableComputeReplicaCountCondition(autoscaler, "FailedGetExternalMetric", err.Error())
 	return 0, time.Time{}, "", condition, fmt.Errorf(errMsg)
 }
 
@@ -563,9 +563,13 @@ func (r *ReconcileKafkaConnectAutoScaler) computeReplicasForMetric(autoscaler *k
 	klog.Infof("metric type is : %s", spec.Type)
 	switch spec.Type {
 	case autoscalingv2.ObjectMetricSourceType:
+		if spec.Object == nil {
+			condition := r.getUnableComputeReplicaCountCondition(autoscaler, "WrongMetricSpec", "the type is Object but cannot find object metric definition")
+			return 0, "", time.Time{}, condition, fmt.Errorf("the type is Object but cannot find object metric definition")
+		}
 		metricSelector, err := metav1.LabelSelectorAsSelector(spec.Object.Metric.Selector)
 		if err != nil {
-			condition := r.getUnableComputeReplicaCountCondition(autoscaler, "FailedGetObjectMetric", err)
+			condition := r.getUnableComputeReplicaCountCondition(autoscaler, "FailedGetObjectMetric", err.Error())
 			return 0, "", time.Time{}, condition, fmt.Errorf("failed to get object metric value: %v", err)
 		}
 		klog.Infof("metric selector is : %v", metricSelector)
@@ -574,9 +578,13 @@ func (r *ReconcileKafkaConnectAutoScaler) computeReplicasForMetric(autoscaler *k
 			return 0, "", time.Time{}, condition, fmt.Errorf("failed to get object metric value: %v", err)
 		}
 	case autoscalingv2.PodsMetricSourceType:
+		if spec.Pods == nil {
+			condition := r.getUnableComputeReplicaCountCondition(autoscaler, "WrongMetricSpec", "the type is Pods but cannot find pods metric definition")
+			return 0, "", time.Time{}, condition, fmt.Errorf("the type is Pods but cannot find pods metric definition")
+		}
 		metricSelector, err := metav1.LabelSelectorAsSelector(spec.Pods.Metric.Selector)
 		if err != nil {
-			condition := r.getUnableComputeReplicaCountCondition(autoscaler, "FailedGetPodsMetric", err)
+			condition := r.getUnableComputeReplicaCountCondition(autoscaler, "FailedGetPodsMetric", err.Error())
 			return 0, "", time.Time{}, condition, fmt.Errorf("failed to get pods metric value: %v", err)
 		}
 		replicaCountProposal, timestampProposal, metricNameProposal, condition, err = r.computeStatusForPodsMetric(specTask, spec, autoscaler, selector, status, metricSelector)
@@ -584,12 +592,21 @@ func (r *ReconcileKafkaConnectAutoScaler) computeReplicasForMetric(autoscaler *k
 			return 0, "", time.Time{}, condition, fmt.Errorf("failed to get pods metric value: %v", err)
 		}
 	case autoscalingv2.ResourceMetricSourceType:
+		if spec.Resource == nil {
+			condition := r.getUnableComputeReplicaCountCondition(autoscaler, "WrongMetricSpec", "the type is Resource but cannot find resource metric definition")
+			return 0, "", time.Time{}, condition, fmt.Errorf("the type is Resource but cannot find resource metric definition")
+		}
 		replicaCountProposal, timestampProposal, metricNameProposal, condition, err = r.computeStatusForResourceMetric(specTask, spec, autoscaler, selector, status)
 
 		if err != nil {
 			return 0, "", time.Time{}, condition, err
 		}
 	case autoscalingv2.ExternalMetricSourceType:
+		if spec.External == nil {
+			condition := r.getUnableComputeReplicaCountCondition(autoscaler, "WrongMetricSpec", "the type is External but cannot find external metric definition")
+			return 0, "", time.Time{}, condition, fmt.Errorf("the type is External but cannot find external metric definition")
+		}
+
 		replicaCountProposal, timestampProposal, metricNameProposal, condition, err = r.computeStatusForExternalMetric(specTask, currentTask, spec, autoscaler, selector, status)
 		if err != nil {
 			return 0, "", time.Time{}, condition, err
@@ -597,7 +614,7 @@ func (r *ReconcileKafkaConnectAutoScaler) computeReplicasForMetric(autoscaler *k
 	default:
 		errMsg := fmt.Sprintf("unknown metric source type %q", string(spec.Type))
 		err = fmt.Errorf(errMsg)
-		condition := r.getUnableComputeReplicaCountCondition(autoscaler, "InvalidMetricSourceType", err)
+		condition := r.getUnableComputeReplicaCountCondition(autoscaler, "InvalidMetricSourceType", err.Error())
 		return 0, "", time.Time{}, condition, err
 	}
 	return replicaCountProposal, metricNameProposal, timestampProposal, autoscalingv2.HorizontalPodAutoscalerCondition{}, nil
@@ -689,12 +706,14 @@ func (r *ReconcileKafkaConnectAutoScaler) reconcileAutoscaler(wg *sync.WaitGroup
 	}
 
 	if !foundReplicas {
-		r.eventRecorder.Event(autoscaler, v1.EventTypeWarning, "FailedGetKafkaConnector", err.Error())
+		evtMsg := fmt.Sprintf("cannot find kafka connect config %s in %s:%s", autoscaler.Spec.KafkaConnectorScaleTargetRef.KafkaConnectorName, kafkaConnect.Namespace, kafkaConnect.Name)
+		r.eventRecorder.Event(autoscaler, v1.EventTypeWarning, "FailedGetKafkaConnector", evtMsg)
 		setCondition(autoscaler, autoscalingv2.AbleToScale, v1.ConditionFalse, "FailedGetKafkaConnect", "the kafkaConnectAutoScaler controller was unable to get the target's current KafkaConnector: %s", autoscaler.Spec.KafkaConnectorScaleTargetRef.KafkaConnectorName)
 		return fmt.Errorf("failed to query kafkaConnector subresource for %s: %s", reference, autoscaler.Spec.KafkaConnectorScaleTargetRef.KafkaConnectorName)
 	}
 	if currentTask <= 0 {
-		r.eventRecorder.Event(autoscaler, v1.EventTypeWarning, "KafkaConnectorZeroReplicas", err.Error())
+		evtMsg := fmt.Sprintf("task number is zero for config %s in %s:%s", autoscaler.Spec.KafkaConnectorScaleTargetRef.KafkaConnectorName, kafkaConnect.Namespace, kafkaConnect.Name)
+		r.eventRecorder.Event(autoscaler, v1.EventTypeWarning, "KafkaConnectorZeroReplicas", evtMsg)
 		setCondition(autoscaler, autoscalingv2.AbleToScale, v1.ConditionFalse, "KafkaConnectorZeroReplicas", "the kafkaConnectAutoScaler controller find the connector with zero replica: %s", autoscaler.Spec.KafkaConnectorScaleTargetRef.KafkaConnectorName)
 		return fmt.Errorf("zero replicat for %s: %s", reference, autoscaler.Spec.KafkaConnectorScaleTargetRef.KafkaConnectorName)
 	}
