@@ -445,9 +445,6 @@ func (utils *Utils) checkDeployment(instance *kafkaconnectv1alpha1.KafkaConnect)
 		},
 		Spec: appsv1.DeploymentSpec{
 			//Replicas: &instance.Status.PodNb,
-			Selector: &metav1.LabelSelector{
-				MatchLabels: podLabels,
-			},
 			Template: podTemplate,
 		},
 	}
@@ -476,6 +473,9 @@ func (utils *Utils) checkDeployment(instance *kafkaconnectv1alpha1.KafkaConnect)
 		expectedDeployment.Spec.Replicas = &instance.Status.PodNb
 		if exist {
 			return expectedDeployment, foundDeployment, nil
+		}
+		expectedDeployment.Spec.Selector = &metav1.LabelSelector{
+			MatchLabels: podLabels,
 		}
 		return expectedDeployment, nil, nil
 
