@@ -12,7 +12,7 @@
 
 In case you want to build the operator from the source code, e.g., to test a fix or a feature you write, you can do so following the instructions below.
 
-The easiest way to build the operator is by using operator-sdk cli
+The easiest way to build the operator is by using docker command
 
 ```sh
 $ docker build -t <image-tag> -f build/Dockerfile .

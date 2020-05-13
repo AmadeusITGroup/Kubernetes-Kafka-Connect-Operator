@@ -524,9 +524,6 @@ func GeneratePodLabels(instance kafkaconnectv1alpha1.KafkaConnect) map[string]st
 		"name": instance.Name,
 		"type": "kafkaConnect",
 	}
-	for key, value := range instance.Labels {
-		podLabels[key] = value
-	}
 	return podLabels
 }
 
