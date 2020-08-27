@@ -7,26 +7,19 @@ require (
 	github.com/emicklei/go-restful v2.12.0+incompatible // indirect
 	github.com/go-openapi/spec v0.19.7 // indirect
 	github.com/go-openapi/swag v0.19.9 // indirect
-	github.com/json-iterator/go v1.1.9 // indirect
 	github.com/kubernetes-incubator/custom-metrics-apiserver v0.0.0-20190918110929-3d9be26a50eb
 	github.com/mailru/easyjson v0.7.1 // indirect
 	github.com/operator-framework/operator-sdk v0.15.2
 	github.com/spf13/pflag v1.0.5
-	golang.org/x/net v0.0.0-20200421231249-e086a090c8fd // indirect
-	golang.org/x/tools v0.0.0-20200422022333-3d57cf2e726e // indirect
 	gonum.org/v1/gonum v0.7.0 // indirect
 	k8s.io/api v0.0.0
 	k8s.io/apimachinery v0.0.0
 	k8s.io/client-go v12.0.0+incompatible
 	k8s.io/code-generator v0.18.2 // indirect
-	k8s.io/gengo v0.0.0-20200413195148-3a45101e95ac // indirect
 	k8s.io/klog v1.0.0
-	k8s.io/klog/v2 v2.0.0 // indirect
-	k8s.io/kube-openapi v0.0.0-20200413232311-afe0b5e9f729 // indirect
-	k8s.io/kubernetes v1.16.2
+	k8s.io/kubernetes v1.19.0
 	k8s.io/metrics v0.0.0
 	sigs.k8s.io/controller-runtime v0.4.0
-	sigs.k8s.io/yaml v1.2.0 // indirect
 )
 
 // Pinned to kubernetes-1.16.2
