@@ -1,0 +1,105 @@
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: kubernetes-kafka-connect-operator
+rules:
+  - verbs:
+      - list
+      - watch
+      - update
+    apiGroups:
+      - kafkaconnect.operator.io
+    resources:
+      - kafkaconnects
+      - kafkaconnectautoscalers
+      - '*'
+  - verbs:
+      - list
+      - watch
+    apiGroups:
+      - ''
+    resources:
+      - pods
+      - services
+  - verbs:
+      - create
+      - patch
+    apiGroups:
+      - ''
+    resources:
+      - events
+      - services
+  - verbs:
+      - list
+      - create
+      - update
+      - watch
+    apiGroups:
+      - 'extensions'
+    resources:
+      - ingresses
+  - verbs:
+      - create
+    apiGroups:
+      - route.openshift.io
+    resources:
+      - routes/custom-host
+  - verbs:
+      - list
+      - watch
+      - create
+      - update
+    apiGroups:
+      - apps
+    resources:
+      - deployments
+  - verbs:
+      - get
+      - update
+    apiGroups:
+      - apps
+    resources:
+      - deployments/scale
+  - verbs:
+      - get
+      - list
+      - watch
+    apiGroups:
+      - metrics.k8s.io
+    resources:
+      - pods
+---
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: kubernetes-kafka-connect-operator
+rules:
+  - verbs:
+      - get
+    apiGroups:
+      - ''
+    resources:
+      - pods
+      - configmaps
+  - verbs:
+      - create
+    apiGroups:
+      - ''
+    resources:
+      - configmaps
+      - services
+  - verbs:
+      - get
+    apiGroups:
+      - apps
+    resources:
+      - deployments
+  - verbs:
+      - update
+    apiGroups:
+      - apps
+    resourceNames:
+      - kubernetes-kafka-connect-operator
+    resources:
+      - deployments/finalizers
+

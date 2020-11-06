@@ -9,6 +9,10 @@ spec:
       name: kubernetes-kafka-connect-operator
   template:
     metadata:
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8383"
+        prometheus.io/path: "/metrics"
       labels:
         name: kubernetes-kafka-connect-operator
     spec:
@@ -21,49 +25,16 @@ spec:
           - Kubernetes-Kafka-Connect-Operator
           imagePullPolicy: Always
           ports:
-          - containerPort: 6443
-            name: https
-          - containerPort: 8080
+          - containerPort: 8383
             name: http
           env:
             - name: WATCH_NAMESPACE
-              valueFrom:
-                fieldRef:
-                  fieldPath: metadata.namespace
+              value: application
+            - name: EXPORT_LAG_CUSTOM_METRICS
+              value: "false"
             - name: POD_NAME
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.name
             - name: OPERATOR_NAME
               value: "kubernetes-kafka-connect-operator"
-
----
-apiVersion: apiregistration.k8s.io/v1
-kind: APIService
-metadata:
-  name: v1beta2.custom.metrics.k8s.io
-spec:
-  service:
-    name: kubernetes-kafka-connect-operator-svc
-    namespace: default
-  group: custom.metrics.k8s.io
-  version: v1beta2
-  insecureSkipTLSVerify: true
-  groupPriorityMinimum: 100
-  versionPriority: 200
-
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: kubernetes-kafka-connect-operator-svc
-spec:
-  ports:
-  - name: https
-    port: 443
-    targetPort: 6443
-  - name: http
-    port: 80
-    targetPort: 8080
-  selector:
-    name: kubernetes-kafka-connect-operator
