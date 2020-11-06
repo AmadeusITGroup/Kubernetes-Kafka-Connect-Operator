@@ -1,0 +1,29 @@
+apiVersion: apiregistration.k8s.io/v1
+kind: APIService
+metadata:
+  name: v1beta2.custom.metrics.k8s.io
+spec:
+  service:
+    name: kubernetes-kafka-connect-operator-svc
+    namespace: default
+  group: custom.metrics.k8s.io
+  version: v1beta2
+  insecureSkipTLSVerify: true
+  groupPriorityMinimum: 100
+  versionPriority: 200
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kubernetes-kafka-connect-operator-svc
+spec:
+  ports:
+  - name: https
+    port: 443
+    targetPort: 6443
+  - name: http
+    port: 80
+    targetPort: 8080
+  selector:
+    name: kubernetes-kafka-connect-operator

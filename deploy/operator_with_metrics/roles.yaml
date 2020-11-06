@@ -1,0 +1,118 @@
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: kubernetes-kafka-connect-operator
+  namespace: application
+rules:
+  - verbs:
+      - list
+      - watch
+      - update
+    apiGroups:
+      - kafkaconnect.operator.io
+    resources:
+      - kafkaconnects
+      - kafkaconnectautoscalers
+      - '*'
+  - verbs:
+      - list
+      - get
+      - create
+      - update
+      - patch
+    apiGroups:
+      - ''
+    resources:
+      - events
+  - verbs:
+      - list
+      - get
+      - create
+      - update
+      - watch
+    apiGroups:
+      - ''
+    resources:
+      - services
+  - verbs:
+      - get
+      - list
+      - create
+      - update
+      - patch
+      - watch
+    apiGroups:
+      - '*'
+    resources:
+      - ingresses
+      - ingresses/status
+      - routes/custom-host
+      - routes/status
+      - routes
+  - verbs:
+      - list
+      - watch
+    apiGroups:
+      - ''
+    resources:
+      - pods
+  - verbs:
+      - list
+      - watch
+      - create
+      - update
+    apiGroups:
+      - apps
+    resources:
+      - deployments
+  - verbs:
+      - get
+      - list
+      - watch
+    apiGroups:
+      - metrics.k8s.io
+    resources:
+      - pods
+  - verbs:
+      - create
+    apiGroups:
+      - monitoring.coreos.com
+    resources:
+      - servicemonitors
+---
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: kubernetes-kafka-connect-operator
+  namespace: operator
+rules:
+  - verbs:
+      - get
+    apiGroups:
+      - ''
+    resources:
+      - pods
+      - configmaps
+  - verbs:
+      - create
+    apiGroups:
+      - ''
+    resources:
+      - configmaps
+      - services
+  - verbs:
+      - get
+    apiGroups:
+      - apps
+    resources:
+      - deployments
+      - replicasets
+  - verbs:
+      - update
+    apiGroups:
+      - apps
+    resourceNames:
+      - kubernetes-kafka-connect-operator
+    resources:
+      - deployments/finalizers
+
