@@ -3,7 +3,7 @@ module github.com/amadeusitgroup/kubernetes-kafka-connect-operator
 go 1.13
 
 require (
-	github.com/Shopify/sarama v1.26.1
+	github.com/Shopify/sarama v1.29.0
 	github.com/emicklei/go-restful v2.12.0+incompatible // indirect
 	github.com/go-openapi/spec v0.19.7 // indirect
 	github.com/go-openapi/swag v0.19.9 // indirect
@@ -12,7 +12,6 @@ require (
 	github.com/mailru/easyjson v0.7.1 // indirect
 	github.com/operator-framework/operator-sdk v0.15.2
 	github.com/spf13/pflag v1.0.5
-	golang.org/x/net v0.0.0-20200421231249-e086a090c8fd // indirect
 	golang.org/x/tools v0.0.0-20200422022333-3d57cf2e726e // indirect
 	gonum.org/v1/gonum v0.7.0 // indirect
 	k8s.io/api v0.0.0
