@@ -12,11 +12,9 @@ require (
 	github.com/mailru/easyjson v0.7.1 // indirect
 	github.com/operator-framework/operator-sdk v0.15.2
 	github.com/spf13/pflag v1.0.5
-	golang.org/x/net v0.0.0-20200421231249-e086a090c8fd // indirect
-	golang.org/x/tools v0.0.0-20200422022333-3d57cf2e726e // indirect
 	gonum.org/v1/gonum v0.7.0 // indirect
-	k8s.io/api v0.0.0
-	k8s.io/apimachinery v0.0.0
+	k8s.io/api v0.21.2
+	k8s.io/apimachinery v0.21.2
 	k8s.io/client-go v12.0.0+incompatible
 	k8s.io/code-generator v0.18.2 // indirect
 	k8s.io/gengo v0.0.0-20200413195148-3a45101e95ac // indirect
@@ -25,7 +23,7 @@ require (
 	k8s.io/kube-openapi v0.0.0-20200413232311-afe0b5e9f729 // indirect
 	k8s.io/kubernetes v1.16.2
 	k8s.io/metrics v0.0.0
-	sigs.k8s.io/controller-runtime v0.4.0
+	sigs.k8s.io/controller-runtime v0.9.3
 	sigs.k8s.io/yaml v1.2.0 // indirect
 )
 
